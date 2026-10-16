@@ -38,6 +38,14 @@ class AutonomyPolicyTest {
     }
 
     @Test
+    fun `unknown tools and sensitive operations require approval`() {
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("unknown.tool"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("termux.exec"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("memory.manage"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("notification.send"))
+    }
+
+    @Test
     fun `can override policy`() {
         policy.setPolicy("sms.send", ToolApprovalPolicy.AUTO)
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("sms.send"))
