@@ -30,7 +30,7 @@ fun ApprovalScreen(
                 title = { Text("Menunggu Persetujuan") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Kembali")
                     }
                 }
             )
@@ -44,7 +44,7 @@ fun ApprovalScreen(
                 contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
                 Text(
-                    "No pending approvals",
+                    "Tidak ada persetujuan yang menunggu",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -60,9 +60,9 @@ fun ApprovalScreen(
                 items(requests, key = { it.id }) { request ->
                     ApprovalCard(
                         request = request,
-                        onSetujui = { viewModel.respond(request.id, ApprovalResult.APPROVED) },
-                        onTolak = { viewModel.respond(request.id, ApprovalResult.DENIED) },
-                        onSelalu izinkanAllow = { viewModel.respond(request.id, ApprovalResult.ALWAYS_ALLOW) }
+                        onApprove = { viewModel.respond(request.id, ApprovalResult.APPROVED) },
+                        onDeny = { viewModel.respond(request.id, ApprovalResult.DENIED) },
+                        onAlwaysAllow = { viewModel.respond(request.id, ApprovalResult.ALWAYS_ALLOW) }
                     )
                 }
             }
@@ -73,9 +73,9 @@ fun ApprovalScreen(
 @Composable
 private fun ApprovalCard(
     request: ApprovalRequest,
-    onSetujui: () -> Unit,
-    onTolak: () -> Unit,
-    onSelalu izinkanAllow: () -> Unit
+    onApprove: () -> Unit,
+    onDeny: () -> Unit,
+    onAlwaysAllow: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -100,13 +100,13 @@ private fun ApprovalCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(onClick = onTolak, modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = onDeny, modifier = Modifier.weight(1f)) {
                     Text("Tolak")
                 }
-                Button(onClick = onSetujui, modifier = Modifier.weight(1f)) {
+                Button(onClick = onApprove, modifier = Modifier.weight(1f)) {
                     Text("Setujui")
                 }
-                TextButton(onClick = onSelalu izinkanAllow) {
+                TextButton(onClick = onAlwaysAllow) {
                     Text("Selalu izinkan")
                 }
             }
