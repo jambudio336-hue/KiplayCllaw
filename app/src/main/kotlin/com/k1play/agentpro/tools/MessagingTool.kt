@@ -216,6 +216,39 @@ Must have a chat open in the foreground with a visible input field."""
             }
             context.sendBroadcast(findIntent)
             val screenResult = AccessibilityBridge.awaitResult(findDeferred)
+            val activePackage = screenResult["package"]?.jsonPrimitive?.contentOrNull
+                ?: return ToolResult.error("Could not identify the active app screen. Open the intended chat and retry.")
+            val supportedMessagingPackages = setOf(
+                "com.whatsapp",
+                "com.whatsapp.w4b",
+                "org.telegram.messenger",
+                "com.instagram.android",
+                "com.google.android.apps.messaging",
+                "com.samsung.android.messaging"
+            )
+            if (activePackage !in supportedMessagingPackages) {
+                return ToolResult.error(
+                    "Refusing to type or send because the active app is '$activePackage', not a supported messaging app. " +
+                    "Open the intended chat first."
+                )
+            }
+
+            // Focus the message input explicitly so a search field or another editable field
+            // is not accidentally populated.
+            val (focusReceiver, focusDeferred) = AccessibilityBridge.createReceiver()
+            val focusIntent = Intent(K1pL4yAgentProAccessibility.ACTION_COMMAND).apply {
+                putExtra("result_receiver", focusReceiver)
+                putExtra("action", "focus_message_input")
+                setPackage(context.packageName)
+            }
+            context.sendBroadcast(focusIntent)
+            val focusResult = AccessibilityBridge.awaitResult(focusDeferred)
+            if (focusResult["success"]?.jsonPrimitive?.booleanOrNull != true) {
+                return ToolResult.error(
+                    "Could not safely identify the message input field: " +
+                    (focusResult["error"]?.jsonPrimitive?.contentOrNull ?: "unknown focus error")
+                )
+            }
 
             // Step 2: Type the message
             val (typeReceiver, typeDeferred) = AccessibilityBridge.createReceiver()
