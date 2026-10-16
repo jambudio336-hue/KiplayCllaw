@@ -44,6 +44,11 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
                     intent.getIntExtra("y", 0),
                     intent.getStringExtra("text")
                 )
+                "long_press" -> handleLongPress(
+                    intent.getIntExtra("x", 0),
+                    intent.getIntExtra("y", 0),
+                    intent.getStringExtra("text")
+                )
                 "type" -> handleType(intent.getStringExtra("text") ?: "")
                 "focus_message_input" -> focusMessageInput()
                 "swipe" -> handleSwipe(intent.getStringExtra("direction") ?: "right")
@@ -192,6 +197,37 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
             if (current.isClickable) return current
             current = current.parent ?: return null
         }
+    }
+
+    private fun handleLongPress(x: Int, y: Int, text: String?): JsonObject {
+        if (!text.isNullOrBlank()) {
+            val rootNode = rootInActiveWindow ?: return errorResult("No active window")
+            for (label in text.split("|").map { it.trim() }.filter { it.isNotEmpty() }) {
+                val node = findNodeByLabel(rootNode, label) ?: continue
+                val target = findClickableParent(node) ?: node
+                if (target.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK)) {
+                    return successResult("long_press", "Long-pressed matching UI element '$label'")
+                }
+            }
+            return errorResult("No long-clickable UI element matched: '$text'")
+        }
+
+        if (x < 0 || y < 0 || x >= screenWidth || y >= screenHeight) {
+            return errorResult("Long-press coordinates are outside the current screen")
+        }
+        val path = Path().apply { moveTo(x.toFloat(), y.toFloat()) }
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 900))
+            .build()
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                Log.d(TAG, "Coordinate long press completed")
+            }
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                Log.w(TAG, "Coordinate long press cancelled")
+            }
+        }, null)
+        return successResult("long_press", "Coordinate long press dispatched at ($x, $y)")
     }
 
     // ── Type ─────────────────────────────────────────────────────────────
