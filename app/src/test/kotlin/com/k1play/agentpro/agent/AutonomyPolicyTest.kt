@@ -14,13 +14,23 @@ class AutonomyPolicyTest {
     }
 
     @Test
-    fun `read operations default to AUTO`() {
-        assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("sms.read"))
+    fun `cautious profile only auto-approves basic reads`() {
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("contacts.search"))
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("calendar.query"))
-        assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("location.get"))
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("file.read"))
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("settings.get"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("sms.read"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("location.get"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("screen.capture"))
+    }
+
+    @Test
+    fun `full auto still requires approval for writes and unknown tools`() {
+        policy.applyProfile(PermissionProfile.FULL_AUTO)
+        assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("sms.read"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("sms.send"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("termux.exec"))
+        assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("unknown.tool"))
     }
 
     @Test
