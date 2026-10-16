@@ -4,6 +4,8 @@
 
     <!-- Network -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Optional integration: Termux must also allow external apps and grant this permission. -->
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- SMS -->
@@ -76,6 +78,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CellClaw"
         tools:targetApi="35">
+        <receiver
+            android:name=".tools.TermuxCommandResultReceiver"
+            android:exported="false" />
 
         <activity
             android:name=".ui.MainActivity"
