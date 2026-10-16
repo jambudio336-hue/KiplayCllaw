@@ -7,6 +7,7 @@ import com.k1play.agentpro.approval.ApprovalResult
 import com.k1play.agentpro.config.AppConfig
 import com.k1play.agentpro.config.Identity
 import com.k1play.agentpro.memory.ConversationStore
+import com.k1play.agentpro.memory.SemanticMemory
 import com.k1play.agentpro.provider.*
 import com.k1play.agentpro.provider.ProviderManager
 import com.k1play.agentpro.tools.ToolRegistry
@@ -25,6 +26,7 @@ class AgentLoop @Inject constructor(
     private val toolRegistry: ToolRegistry,
     private val approvalQueue: ApprovalQueue,
     private val conversationStore: ConversationStore,
+    private val semanticMemory: SemanticMemory,
     private val identity: Identity,
     private val autonomyPolicy: AutonomyPolicy,
     private val selfImprovementMemory: SelfImprovementMemory,
@@ -43,12 +45,14 @@ class AgentLoop @Inject constructor(
     private val conversationHistory = mutableListOf<Message>()
     private var currentJob: Job? = null
     private var isHeartbeatRun = false
+    private var loadedConversationId: String? = null
 
     fun submitMessage(text: String) {
         currentJob?.cancel()
         currentJob = scope.launch {
             try {
                 isHeartbeatRun = false
+                ensureConversationHistoryLoaded()
                 _state.value = AgentState.THINKING
                 conversationHistory.add(Message.user(text))
                 conversationStore.addMessage("user", text)
@@ -96,6 +100,41 @@ class AgentLoop @Inject constructor(
         }
     }
 
+    private suspend fun ensureConversationHistoryLoaded() {
+        val id = conversationStore.currentId()
+        if (loadedConversationId == id) return
+        conversationHistory.clear()
+        conversationStore.getAllMessages().forEach { entity ->
+            when (entity.role) {
+                "user" -> conversationHistory.add(Message.user(entity.content))
+                "assistant" -> conversationHistory.add(Message.assistant(entity.content))
+            }
+        }
+        loadedConversationId = id
+    }
+
+    fun startNewConversation() {
+        currentJob?.cancel()
+        conversationStore.newConversation("chat_" + System.currentTimeMillis())
+        conversationHistory.clear()
+        loadedConversationId = conversationStore.currentId()
+        _state.value = AgentState.IDLE
+    }
+
+    suspend fun openConversation(id: String) {
+        currentJob?.cancel()
+        _state.value = AgentState.IDLE
+        conversationStore.selectConversation(id)
+        conversationHistory.clear()
+        conversationStore.getAllMessages().forEach { entity ->
+            when (entity.role) {
+                "user" -> conversationHistory.add(Message.user(entity.content))
+                "assistant" -> conversationHistory.add(Message.assistant(entity.content))
+            }
+        }
+        loadedConversationId = id
+    }
+
     fun stop() {
         currentJob?.cancel()
         _state.value = AgentState.IDLE
@@ -123,6 +162,7 @@ class AgentLoop @Inject constructor(
             val request = CompletionRequest(
                 systemPrompt = listOf(
                     identity.buildSystemPrompt(toolRegistry),
+                    semanticMemory.buildContext(),
                     selfImprovementMemory.systemPromptAddition()
                 ).filter { it.isNotBlank() }.joinToString("\n\n"),
                 messages = conversationHistory.toList(),
