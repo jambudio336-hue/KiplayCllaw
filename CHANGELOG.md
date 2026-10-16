@@ -19,6 +19,7 @@ Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan 
 - Report UI submission separately from delivery confirmation.
 - Fix Always Allow decisions being treated as denials; persist explicit per-tool choices across app restarts.
 - Improve the agent's device-aware planning, screen re-checks, and truthful messaging status reporting.
+- Require a supported messaging app to be foregrounded and focus the message field before typing; report submission only when the chat UI provides evidence.
 
 ## [Unreleased] — 2026-10-17
 
