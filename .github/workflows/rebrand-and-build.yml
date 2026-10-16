@@ -50,7 +50,7 @@ jobs:
               updated = updated.replace(old_lower, "k1play_agent")
               updated = updated.replace(old_brand.upper(), "K1PLAY_AGENT")
               if path.as_posix() == "app/build.gradle.kts":
-                  updated = updated.replace('namespace = "com.cellclaw"', 'namespace = "com.k1play.agentpro"')
+                  updated = updated.replace('namespace = "' + old_pkg + '"', 'namespace = "' + new_pkg + '"')
               if updated != original:
                   path.write_text(updated, encoding="utf-8")
 
