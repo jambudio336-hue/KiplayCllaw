@@ -23,9 +23,11 @@ class ConversationStore @Inject constructor(
         return messageDao.getRecent(currentConversationId, limit).reversed()
     }
 
-    suspend fun getAllMessages(): List<MessageEntity> {
-        return messageDao.getAll(currentConversationId)
-    }
+    suspend fun getAllMessages(): List<MessageEntity> = messageDao.getAll(currentConversationId)
+
+    suspend fun getMessages(conversationId: String): List<MessageEntity> = messageDao.getAll(conversationId)
+
+    suspend fun getConversationIds(): List<String> = messageDao.getConversationIds()
 
     suspend fun clearCurrentConversation() {
         messageDao.clearConversation(currentConversationId)
