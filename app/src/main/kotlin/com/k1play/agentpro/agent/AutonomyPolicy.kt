@@ -33,7 +33,7 @@ class AutonomyPolicy @Inject constructor() {
         "sms.send", "phone.call", "contacts.add", "calendar.create",
         "camera.snap", "camera.record", "clipboard.write", "file.write",
         "script.exec", "termux.exec", "email.send", "messaging.reply", "schedule.manage",
-        "heartbeat.context"
+        "heartbeat.context", "memory.manage"
     )
 
     private val readOps = setOf(
