@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#1565C0</color>
+    <color name="ic_launcher_background">#090609</color>
+    <color name="agent_red">#FF243F</color>
+    <color name="agent_red_dark">#6C1627</color>
+    <color name="agent_surface">#151015</color>
 </resources>
