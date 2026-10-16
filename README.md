@@ -163,3 +163,7 @@ LICENSE.md               status lisensi
 ## Lisensi
 
 Lihat [LICENSE.md](LICENSE.md). Status lisensi upstream perlu dikonfirmasi sebelum distribusi publik atau komersial. Jangan menganggap repo ini memiliki lisensi open-source yang sudah disahkan sampai hal itu dibereskan.
+
+
+### Cross-app automation
+The agent can attempt general UI workflows across installed apps through Android Accessibility, including tap, long-press, type, swipe, scroll, and screen inspection. Actual capabilities depend on Android permissions, app UI/accessibility support, network availability, and the user's current signed-in session. It does not bypass authentication or app protections. Complex visual screens can use screenshot analysis when supported.
