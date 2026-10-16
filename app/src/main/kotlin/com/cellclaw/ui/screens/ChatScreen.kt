@@ -1,6 +1,8 @@
 package com.cellclaw.ui.screens
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
@@ -9,11 +11,13 @@ import android.view.accessibility.AccessibilityManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -58,6 +62,8 @@ fun ChatScreen(
         }
     }
     var inputText by remember { mutableStateOf("") }
+    var showHistoryDialog by remember { mutableStateOf(false) }
+    val clipboard = context.getSystemService(ClipboardManager::class.java)
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -80,7 +86,7 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CellClaw") },
+                title = { Text("K1pL4y_Agent.pro", maxLines = 1) },
                 actions = {
                     if (pendingApprovals.isNotEmpty()) {
                         BadgedBox(badge = {
@@ -140,7 +146,7 @@ fun ChatScreen(
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             )
                         }) {
-                            Text("Enable")
+                            Text("Aktifkan")
                         }
                     }
                 }
@@ -184,7 +190,7 @@ fun ChatScreen(
                                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             )
                         }) {
-                            Text("Grant")
+                            Text("Izinkan")
                         }
                     }
                 }
@@ -297,10 +303,10 @@ fun ChatScreen(
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 text = when (agentState) {
-                                    "thinking" -> "Thinking..."
-                                    "executing_tools" -> "Running tools..."
-                                    "waiting_approval" -> "Approval needed"
-                                    "paused" -> "Paused"
+                                    "thinking" -> "Sedang berpikir..."
+                                    "executing_tools" -> "Menjalankan fitur..."
+                                    "waiting_approval" -> "Perlu persetujuan"
+                                    "paused" -> "Dijeda"
                                     else -> agentState
                                 },
                                 style = MaterialTheme.typography.labelMedium,
@@ -315,7 +321,7 @@ fun ChatScreen(
                             ) {
                                 Icon(
                                     Icons.Default.Close,
-                                    contentDescription = "Stop",
+                                    contentDescription = "Hentikan",
                                     modifier = Modifier.size(18.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -333,7 +339,7 @@ fun ChatScreen(
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
                                     Text(
-                                        text = "Allow ${request.toolName}?",
+                                        text = "Izinkan ${request.toolName}?",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onErrorContainer
                                     )
@@ -354,20 +360,20 @@ fun ChatScreen(
                                             modifier = Modifier.weight(1f),
                                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                                         ) {
-                                            Text("Deny", style = MaterialTheme.typography.labelSmall)
+                                            Text("Tolak", style = MaterialTheme.typography.labelSmall)
                                         }
                                         Button(
                                             onClick = { viewModel.respondToApproval(request.id, ApprovalResult.APPROVED) },
                                             modifier = Modifier.weight(1f),
                                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                                         ) {
-                                            Text("Approve", style = MaterialTheme.typography.labelSmall)
+                                            Text("Setujui", style = MaterialTheme.typography.labelSmall)
                                         }
                                         TextButton(
                                             onClick = { viewModel.respondToApproval(request.id, ApprovalResult.ALWAYS_ALLOW) },
                                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                                         ) {
-                                            Text("Always", style = MaterialTheme.typography.labelSmall)
+                                            Text("Selalu", style = MaterialTheme.typography.labelSmall)
                                         }
                                     }
                                 }
@@ -424,7 +430,7 @@ fun ChatScreen(
                     onValueChange = { inputText = it },
                     modifier = Modifier.weight(1f),
                     placeholder = {
-                        Text(if (isAgentRunning) "Send instructions..." else "Message CellClaw...")
+                        Text(if (isAgentRunning) "Kirim instruksi..." else "Pesan K1pL4y_Agent.pro...")
                     },
                     shape = RoundedCornerShape(24.dp),
                     maxLines = 4
@@ -442,7 +448,7 @@ fun ChatScreen(
                     ) {
                         Icon(
                             if (isListening) Icons.Default.MicOff else Icons.Default.Mic,
-                            contentDescription = if (isListening) "Stop listening" else "Start voice input",
+                            contentDescription = if (isListening) "Berhenti mendengarkan" else "Mulai input suara",
                             tint = if (isListening) MaterialTheme.colorScheme.error
                                    else MaterialTheme.colorScheme.primary
                         )
@@ -470,7 +476,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun ChatBubble(message: ChatMessage) {
+fun ChatBubble(message: ChatMessage, onCopy: () -> Unit = {}) {
     val isUser = message.role == "user"
     val alignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
     val bgColor = if (isUser) {
