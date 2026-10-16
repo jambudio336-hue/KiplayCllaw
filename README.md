@@ -33,7 +33,18 @@ The system prompt now includes a structured problem-solving protocol for plannin
 
 Skills are loaded into the agent context from bundled assets and user-created local skills. These instructions improve the agent's workflow but do not make every model an expert automatically; results depend on the configured model, available tools, network access, and actual test coverage. Security testing must stay within explicitly authorized scope.
 
-## Termux coding integration\n\nThe `termux.exec` tool can run coding, build, and test commands in Termux and return their output. It requires Termux version 0.109 or newer, the app installed as `com.termux`, and the following one-time setup:\n\n1. In Termux, edit `~/.termux/termux.properties` and set `allow-external-apps = true`, then restart Termux.\n2. In Android Settings → Apps → K1pL4y_Agent.pro → Permissions / Additional permissions, grant **Run commands in Termux environment** if Android exposes that permission.\n3. In the agent, approve each `termux.exec` request. The tool is configured to ask for approval even in the Full Auto profile.\n4. Start with a harmless command such as `pwd` or `python --version` before asking it to modify a project.\n\nCommands run with the Termux user's privileges, so inspect commands before approving them. A timeout does not guarantee that Termux killed the underlying process. If Termux is missing, the permission is not granted, or external apps are disabled, the integration will return an error.\n\n## Safety
+## Termux coding integration
+
+The `termux.exec` tool can run coding, build, and test commands in Termux and return their output. It requires Termux version 0.109 or newer, the app installed as `com.termux`, and the following one-time setup:
+
+1. In Termux, edit `~/.termux/termux.properties` and set `allow-external-apps = true`, then restart Termux.
+2. In Android Settings → Apps → K1pL4y_Agent.pro → Permissions / Additional permissions, grant **Run commands in Termux environment** if Android exposes that permission.
+3. In the agent, approve each `termux.exec` request. The tool is configured to ask for approval even in the Full Auto profile.
+4. Start with a harmless command such as `pwd` or `python --version` before asking it to modify a project.
+
+Commands run with the Termux user's privileges, so inspect commands before approving them. A timeout does not guarantee that Termux killed the underlying process. If Termux is missing, the permission is not granted, or external apps are disabled, the integration will return an error.
+
+## Safety
 
 This app can interact with device UI and may request sensitive permissions. Keep human confirmation enabled for messages, account changes, purchases, deletion, and other consequential actions. Never share OTPs, passwords, or banking credentials with an agent.
 
@@ -43,4 +54,4 @@ This repository currently contains source derived from CellClaw. Before distribu
 
 ## Current build scope
 
-The initial workflow runs unit tests and builds an Android **debug** APK, then uploads it as a GitHub Actions artifact. Release signing, package ID rebranding, and device-level testing are separate follow-up tasks.
+CI runs unit tests and builds debug and test-release APKs. The test-release build uses a debug signing key and is not suitable for production or Play Store distribution. The Android application ID remains `com.cellclaw`; the launcher label is `K1pL4y_Agent.pro`. Device-level testing and upstream license verification are still required.
