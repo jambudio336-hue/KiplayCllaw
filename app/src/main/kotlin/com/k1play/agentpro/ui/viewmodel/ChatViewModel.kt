@@ -65,6 +65,10 @@ class ChatViewModel @Inject constructor(
 
     private fun loadHistory() {
         viewModelScope.launch {
+            val ids = runCatching { conversationStore.getConversationIds() }.getOrDefault(emptyList())
+            if (conversationStore.currentId() == "default" && ids.isNotEmpty() && ids.first() != "default") {
+                runCatching { agentLoop.openConversation(ids.first()) }
+            }
             val saved = runCatching { conversationStore.getAllMessages() }.getOrDefault(emptyList())
             _messages.value = saved.map { entity -> ChatMessage(id = entity.id, role = entity.role, content = entity.content) }
             messageCounter = saved.maxOfOrNull { it.id } ?: 0L
