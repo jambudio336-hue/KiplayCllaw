@@ -8,11 +8,16 @@ class SemanticMemory @Inject constructor(
     private val factDao: MemoryFactDao
 ) {
     suspend fun remember(key: String, value: String, category: String = "general") {
+        val existing = factDao.getByKey(key)
         factDao.upsert(
             MemoryFactEntity(
+                id = existing?.id ?: 0,
                 key = key,
                 value = value,
-                category = category
+                category = category,
+                confidence = existing?.confidence ?: 1.0f,
+                createdAt = existing?.createdAt ?: System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis()
             )
         )
     }
