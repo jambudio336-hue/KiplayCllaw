@@ -5,7 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Tambah
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +22,7 @@ fun KeahlianScreen(
     viewModel: KeahlianViewModel = hiltViewModel()
 ) {
     val skills by viewModel.skills.collectAsState()
-    var showTambahDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -34,8 +34,8 @@ fun KeahlianScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showTambahDialog = true }) {
-                        Icon(Icons.Default.Tambah, "Tambah Skill")
+                    IconButton(onClick = { showAddDialog = true }) {
+                        Icon(Icons.Default.Add, "Tambah keahlian")
                     }
                 }
             )
@@ -80,12 +80,12 @@ fun KeahlianScreen(
         }
     }
 
-    if (showTambahDialog) {
-        TambahSkillDialog(
-            onDismiss = { showTambahDialog = false },
-            onTambah = { name, description, trigger, steps ->
+    if (showAddDialog) {
+        AddSkillDialog(
+            onDismiss = { showAddDialog = false },
+            onAdd = { name, description, trigger, steps ->
                 viewModel.addSkill(name, description, trigger, steps)
-                showTambahDialog = false
+                showAddDialog = false
             }
         )
     }
@@ -124,9 +124,9 @@ private fun SkillCard(skill: Skill, onDelete: () -> Unit) {
 }
 
 @Composable
-private fun TambahSkillDialog(
+private fun AddSkillDialog(
     onDismiss: () -> Unit,
-    onTambah: (name: String, description: String, trigger: String, steps: String) -> Unit
+    onAdd: (name: String, description: String, trigger: String, steps: String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -169,7 +169,7 @@ private fun TambahSkillDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onTambah(name, description, trigger, steps) },
+                onClick = { onAdd(name, description, trigger, steps) },
                 enabled = name.isNotBlank()
             ) {
                 Text("Tambah")
