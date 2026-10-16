@@ -55,9 +55,9 @@ class ProviderManager @Inject constructor(
         ProviderInfo("gemini", "Google (Gemini)", "gemini-3-flash-preview",
             secureKeyStore.hasApiKey("gemini"),
             models = listOf("gemini-3.1-pro-preview", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-pro")),
-        ProviderInfo("openrouter", "OpenRouter", "google/gemini-2.5-flash",
+        ProviderInfo("openrouter", "OpenRouter", "openrouter/free",
             secureKeyStore.hasApiKey("openrouter"),
-            models = listOf("google/gemini-2.5-flash", "google/gemini-2.5-pro", "anthropic/claude-sonnet-4.6", "openai/gpt-5.2"))
+            models = listOf("openrouter/free"))
     )
 
     /** Check if a provider has an API key configured */
@@ -75,7 +75,13 @@ class ProviderManager @Inject constructor(
 
     private fun configureProvider(type: String, provider: Provider) {
         val apiKey = secureKeyStore.getApiKey(type) ?: return
-        val model = appConfig.model
+        var model = appConfig.model
+        // Older builds could leave a Claude-only model ID in the shared model setting
+        // when switching providers during setup. OpenRouter requires its own model slug.
+        if (type == "openrouter" && (model == "claude-sonnet-4-6" || '/' !in model)) {
+            model = "openrouter/free"
+            appConfig.model = model
+        }
         when (provider) {
             is AnthropicProvider -> provider.configure(apiKey, model)
             is OpenAIProvider -> provider.configure(apiKey, model)
