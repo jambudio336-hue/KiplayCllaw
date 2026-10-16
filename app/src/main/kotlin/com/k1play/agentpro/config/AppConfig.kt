@@ -18,7 +18,14 @@ class AppConfig @Inject constructor(
         set(value) = prefs.edit().putString("provider_type", value).apply()
 
     var model: String
-        get() = prefs.getString("model", "claude-sonnet-4-6") ?: "claude-sonnet-4-6"
+        get() {
+            val saved = prefs.getString("model", null)
+                ?: if (providerType == "openrouter") "openrouter/free" else "claude-sonnet-4-6"
+            // Migrate the old Claude-only default when OpenRouter is selected.
+            return if (providerType == "openrouter" &&
+                (saved == "claude-sonnet-4-6" || '/' !in saved)
+            ) "openrouter/free" else saved
+        }
         set(value) = prefs.edit().putString("model", value).apply()
 
     var maxTokens: Int
