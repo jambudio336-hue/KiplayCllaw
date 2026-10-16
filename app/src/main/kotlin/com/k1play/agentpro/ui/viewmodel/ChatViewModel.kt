@@ -36,6 +36,9 @@ class ChatViewModel @Inject constructor(
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
+    private val _conversationIds = MutableStateFlow<List<String>>(emptyList())
+    val conversationIds: StateFlow<List<String>> = _conversationIds.asStateFlow()
+
     private val _agentState = MutableStateFlow("idle")
     val agentState: StateFlow<String> = _agentState.asStateFlow()
 
@@ -63,12 +66,29 @@ class ChatViewModel @Inject constructor(
     private fun loadHistory() {
         viewModelScope.launch {
             val saved = runCatching { conversationStore.getAllMessages() }.getOrDefault(emptyList())
-            if (_messages.value.isEmpty() && saved.isNotEmpty()) {
-                _messages.value = saved.map { entity ->
-                    ChatMessage(id = entity.id, role = entity.role, content = entity.content)
-                }
-                messageCounter = saved.maxOfOrNull { it.id } ?: 0L
-            }
+            _messages.value = saved.map { entity -> ChatMessage(id = entity.id, role = entity.role, content = entity.content) }
+            messageCounter = saved.maxOfOrNull { it.id } ?: 0L
+            refreshConversationList()
+        }
+    }
+
+    private suspend fun refreshConversationList() {
+        _conversationIds.value = runCatching { conversationStore.getConversationIds() }.getOrDefault(emptyList())
+    }
+
+    fun startNewConversation() {
+        agentLoop.startNewConversation()
+        _messages.value = emptyList()
+        messageCounter = 0L
+    }
+
+    fun openConversation(id: String) {
+        viewModelScope.launch {
+            runCatching { agentLoop.openConversation(id) }
+            val saved = runCatching { conversationStore.getAllMessages() }.getOrDefault(emptyList())
+            _messages.value = saved.map { entity -> ChatMessage(id = entity.id, role = entity.role, content = entity.content) }
+            messageCounter = saved.maxOfOrNull { it.id } ?: 0L
+            refreshConversationList()
         }
     }
 
