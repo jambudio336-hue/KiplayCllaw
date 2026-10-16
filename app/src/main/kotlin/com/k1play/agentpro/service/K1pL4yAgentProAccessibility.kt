@@ -45,6 +45,7 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
                     intent.getStringExtra("text")
                 )
                 "type" -> handleType(intent.getStringExtra("text") ?: "")
+                "focus_message_input" -> focusMessageInput()
                 "swipe" -> handleSwipe(intent.getStringExtra("direction") ?: "right")
                 "scroll" -> handleScroll(intent.getStringExtra("direction") ?: "down")
                 "back" -> {
@@ -223,6 +224,43 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
             if (match != null) return match
         }
         return null
+    }
+
+    private fun focusMessageInput(): JsonObject {
+        val root = rootInActiveWindow ?: return errorResult("No active app window")
+        val candidates = mutableListOf<AccessibilityNodeInfo>()
+        collectEditableNodes(root, candidates)
+        if (candidates.isEmpty()) return errorResult("No editable field found on the current screen")
+
+        val messageLabels = listOf("type a message", "ketik pesan", "message", "pesan", "chat")
+        val labelled = candidates.firstOrNull { node ->
+            val labels = listOf(node.text?.toString().orEmpty(), node.contentDescription?.toString().orEmpty())
+            labels.any { label -> label.isNotBlank() && messageLabels.any { label.contains(it, ignoreCase = true) } }
+        }
+        val target = labelled ?: if (candidates.size == 1) candidates.first() else null
+            ?: return errorResult("More than one editable field is visible and no message input could be identified safely")
+
+        val clicked = target.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        val focused = target.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+        return if (clicked || focused) {
+            successResult("focus_message_input", "Focused the identified editable message field")
+        } else {
+            errorResult("The app did not allow the message input field to be focused")
+        }
+    }
+
+    private fun collectEditableNodes(
+        node: AccessibilityNodeInfo,
+        result: MutableList<AccessibilityNodeInfo>,
+        depth: Int = 0
+    ) {
+        if (depth > 20 || result.size >= 30) return
+        if (node.isEditable || node.className?.toString().orEmpty()
+                .contains("EditText", ignoreCase = true)) result.add(node)
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            collectEditableNodes(child, result, depth + 1)
+        }
     }
 
     // ── Swipe (for dating apps, card swiping, etc.) ──────────────────────
