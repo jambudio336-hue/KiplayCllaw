@@ -52,6 +52,7 @@ fun ChatScreen(
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val messages by viewModel.messages.collectAsState()
+    val conversationIds by viewModel.conversationIds.collectAsState()
     val agentState by viewModel.agentState.collectAsState()
     val pendingApprovals by viewModel.pendingApprovals.collectAsState()
 
@@ -88,22 +89,36 @@ fun ChatScreen(
             onDismissRequest = { showHistoryDialog = false },
             title = { Text("Riwayat percakapan") },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Tersimpan: ${messages.size} pesan")
-                    Text(
-                        messages.takeLast(8).joinToString("\n\n") {
-                            "${if (it.role == "user") "Kamu" else "K1pL4y_Agent.pro"}: ${it.content.take(180)}"
-                        }.ifBlank { "Belum ada riwayat percakapan." },
-                        maxLines = 12,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                Column(
+                    modifier = Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text("Percakapan tersimpan: ${conversationIds.size}")
+                    if (conversationIds.isEmpty()) {
+                        Text("Belum ada percakapan tersimpan.")
+                    } else {
+                        conversationIds.forEachIndexed { index, id ->
+                            TextButton(
+                                onClick = {
+                                    viewModel.openConversation(id)
+                                    showHistoryDialog = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    "${index + 1}. Percakapan ${id.takeLast(8)}",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.clearHistory()
                     showHistoryDialog = false
-                }) { Text("Hapus riwayat") }
+                }) { Text("Hapus percakapan ini") }
             },
             dismissButton = {
                 TextButton(onClick = { showHistoryDialog = false }) { Text("Tutup") }
@@ -116,6 +131,12 @@ fun ChatScreen(
             TopAppBar(
                 title = { Text("K1pL4y_Agent.pro", maxLines = 1) },
                 actions = {
+                    IconButton(onClick = {
+                        viewModel.startNewConversation()
+                        inputText = ""
+                    }) {
+                        Icon(Icons.Default.AddComment, contentDescription = "Percakapan baru")
+                    }
                     IconButton(onClick = { showHistoryDialog = true }) {
                         Icon(Icons.Default.History, contentDescription = "Riwayat percakapan")
                     }
@@ -175,7 +196,7 @@ fun ChatScreen(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "Notification listener disabled",
+                            text = "Akses notifikasi belum diaktifkan",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                             modifier = Modifier.weight(1f)
