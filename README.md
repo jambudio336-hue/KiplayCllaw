@@ -16,7 +16,9 @@ Jika rilis belum tersedia, buka tab **Actions** dan unduh artifact dari workflow
 ## Kemampuan yang disiapkan
 
 - Chat AI dengan pilihan provider/API key yang didukung aplikasi.
-- Memori lokal dan riwayat percakapan yang dapat dihapus.
+- Memori jangka panjang lokal untuk fakta/proyek/preferensi, dengan pencarian dan penghapusan melalui alat memori yang memerlukan persetujuan.
+- Riwayat beberapa percakapan, tombol **Percakapan Baru**, dan pemilih percakapan lama.
+- Jurnal hasil tool untuk membantu menghindari pengulangan pendekatan yang gagal; ini bukan pelatihan ulang model atau perubahan kode otomatis.
 - Salin pesan pengguna dan jawaban AI.
 - Input suara dan pembacaan jawaban lewat text-to-speech jika diaktifkan dan didukung perangkat.
 - Shortcut alur kerja untuk analisis pasar, keamanan siber, coding full-stack, dan riset.
@@ -42,6 +44,10 @@ Untuk order live melalui MT5 atau broker lain, default adalah analisis/simulasi.
 - API key provider AI harus dikonfigurasi; pemakaian provider mungkin berbayar.
 - Aksesibilitas, mikrofon, overlay, lokasi, dan izin lain hanya aktif setelah pengguna mengizinkan.
 - Integrasi Termux membutuhkan Termux 0.109+, `allow-external-apps = true`, dan izin Run Command. Periksa setiap perintah sebelum menyetujuinya.
+
+## Memori dan peningkatan diri
+
+Fakta yang disimpan tetap berada di database lokal perangkat. Agen dapat mencari dan mengelola memori dengan persetujuan pengguna. Hapus riwayat percakapan tidak otomatis menghapus fakta memori terpisah; kelola keduanya secara terpisah. Jurnal hasil hanya membantu memilih pendekatan berikutnya, bukan menjamin agen selalu mengingat semuanya. Perubahan kode atau pembaruan aplikasi harus ditinjau, diuji, dan disetujui sebelum dipasang.
 
 ## Keamanan
 
