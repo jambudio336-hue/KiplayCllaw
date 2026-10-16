@@ -8,11 +8,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF90CAF9),
-    secondary = Color(0xFFCE93D8),
-    tertiary = Color(0xFF80CBC4),
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
+    primary = Color(0xFFEF233C),
+    secondary = Color(0xFFB3132B),
+    tertiary = Color(0xFF7F1D1D),
+    background = Color(0xFF050506),
+    surface = Color(0xFF10090B),
     onPrimary = Color.Black,
     onSecondary = Color.Black,
     onBackground = Color.White,
@@ -20,11 +20,11 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF1565C0),
-    secondary = Color(0xFF7B1FA2),
+    primary = Color(0xFFB3132B),
+    secondary = Color(0xFF7F1D1D),
     tertiary = Color(0xFF00695C),
-    background = Color(0xFFFAFAFA),
-    surface = Color.White,
+    background = Color(0xFF050506),
+    surface = Color(0xFF10090B),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.Black,
@@ -32,9 +32,9 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun CellClawTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+fun K1pL4yAgentProTheme(
+    darkTheme: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
