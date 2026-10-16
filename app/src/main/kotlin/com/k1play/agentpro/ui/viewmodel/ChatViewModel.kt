@@ -92,16 +92,16 @@ class ChatViewModel @Inject constructor(
                     is AgentEvent.UserMessage -> addMessage("user", event.text)
                     is AgentEvent.AssistantText -> addMessage("assistant", event.text)
                     is AgentEvent.ToolCallStart -> addMessage(
-                        "tool", "Calling ${event.name}...",
+                        "tool", "Menjalankan ${event.name}...",
                         toolName = event.name
                     )
                     is AgentEvent.ToolCallResult -> addMessage(
                         "tool",
-                        if (event.result.success) "Done" else "Error: ${event.result.error}",
+                        if (event.result.success) "Selesai" else "Kesalahan: ${event.result.error}",
                         toolName = event.name
                     )
                     is AgentEvent.ToolCallDenied -> addMessage(
-                        "tool", "Denied by user",
+                        "tool", "Ditolak oleh pengguna",
                         toolName = event.name
                     )
                     is AgentEvent.ThinkingText -> _thinkingText.value = event.text
