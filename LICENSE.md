@@ -2,7 +2,7 @@
 
 **Status: lisensi proyek belum ditetapkan.**
 
-Repositori ini merupakan fork dari [frido22/cellclaw](https://github.com/frido22/cellclaw). Saat pemeriksaan terakhir, metadata repositori induk tidak mencantumkan lisensi SPDX dan tidak ditemukan file lisensi di akar repositori induk. Karena itu, file ini **bukan** pemberian lisensi MIT, Apache-2.0, GPL, atau lisensi lain untuk keseluruhan kode.
+Repositori ini merupakan fork dari [frido22/k1play_agent](https://github.com/frido22/k1play_agent). Saat pemeriksaan terakhir, metadata repositori induk tidak mencantumkan lisensi SPDX dan tidak ditemukan file lisensi di akar repositori induk. Karena itu, file ini **bukan** pemberian lisensi MIT, Apache-2.0, GPL, atau lisensi lain untuk keseluruhan kode.
 
 - Hak dan kewajiban atas kode sumber upstream tetap bergantung pada izin/hak yang berlaku dari pemiliknya.
 - Perubahan lokal tidak otomatis memberi hak untuk mendistribusikan ulang seluruh kode turunan.
