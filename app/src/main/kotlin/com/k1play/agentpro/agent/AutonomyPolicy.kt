@@ -33,7 +33,7 @@ class AutonomyPolicy @Inject constructor() {
         "sms.send", "phone.call", "contacts.add", "calendar.create",
         "camera.snap", "camera.record", "clipboard.write", "file.write",
         "script.exec", "termux.exec", "email.send", "messaging.reply", "schedule.manage",
-        "heartbeat.context", "memory.manage"
+        "heartbeat.context", "memory.manage", "device.info"
     )
 
     private val readOps = setOf(
@@ -41,13 +41,13 @@ class AutonomyPolicy @Inject constructor() {
         "clipboard.read", "file.read", "file.list", "settings.get",
         "sensor.read", "phone.log", "notification.listen",
         "browser.search", "browser.open", "screen.read", "screen.capture",
-        "vision.analyze", "messaging.read", "heartbeat.context"
+        "vision.analyze", "messaging.read", "heartbeat.context", "device.info"
     )
 
     private val basicReads = setOf(
         "contacts.search", "calendar.query", "clipboard.read",
         "file.read", "file.list", "settings.get", "sensor.read",
-        "browser.search", "browser.open"
+        "browser.search", "browser.open", "device.info"
     )
 
     init {
@@ -65,7 +65,7 @@ class AutonomyPolicy @Inject constructor() {
                     if (tool in basicReads) ToolApprovalPolicy.AUTO
                     else ToolApprovalPolicy.ASK
                 PermissionProfile.CAUTIOUS ->
-                    if (tool in setOf("contacts.search", "calendar.query", "file.read", "file.list", "settings.get", "browser.search")) ToolApprovalPolicy.AUTO
+                    if (tool in setOf("contacts.search", "calendar.query", "file.read", "file.list", "settings.get", "browser.search", "device.info")) ToolApprovalPolicy.AUTO
                     else ToolApprovalPolicy.ASK
             }
         }
