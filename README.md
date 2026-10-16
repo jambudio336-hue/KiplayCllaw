@@ -1,62 +1,162 @@
 # K1pL4y_Agent.pro
 
-Asisten AI Android eksperimental untuk rekayasa perangkat lunak full-stack, otomatisasi yang disetujui pengguna, riset keamanan siber, dan analisis pasar keuangan.
+<p align="center">
+  <img src="assets/dark-agent-banner.svg" alt="K1pL4y Agent — dark red masked robot" width="100%" />
+</p>
 
-> **Status:** masih tahap pengembangan. APK uji bukan rilis produksi. Fitur real-time bergantung pada koneksi sumber data, API, izin perangkat, dan tool yang benar-benar tersedia.
+<p align="center">
+  <strong>Asisten AI Android eksperimental · Bahasa Indonesia · Fokus pada kontrol pengguna</strong>
+</p>
 
-## Unduh APK uji
+<p align="center">
+  <a href="https://github.com/jambudio336-hue/KiplayCllaw/actions"><img alt="CI" src="https://github.com/jambudio336-hue/KiplayCllaw/actions/workflows/android-apk.yml/badge.svg"></a>
+  <a href="https://github.com/jambudio336-hue/KiplayCllaw/releases"><img alt="Test builds" src="https://img.shields.io/badge/Android-APK%20uji-9f1239?logo=android&logoColor=white"></a>
+  <img alt="Status" src="https://img.shields.io/badge/status-eksperimental-991b1b">
+</p>
 
-1. Buka tab **Releases**: https://github.com/jambudio336-hue/KiplayCllaw/releases
-2. Pilih rilis terbaru dengan label **Test Build**.
-3. Unduh `app-release.apk` dan pasang di Android.
-4. APK uji saat ini ditandatangani dengan debug key; jangan gunakan sebagai rilis produksi atau Play Store.
+> **Peringatan status:** proyek ini masih eksperimental. Build yang berhasil bukan bukti bebas bug, audit keamanan, atau jaminan kompatibilitas semua perangkat. APK yang tersedia dari workflow saat ini ditandatangani dengan debug key dan hanya untuk pengujian.
 
-Jika rilis belum tersedia, buka tab **Actions** dan unduh artifact dari workflow yang berhasil.
+## Daftar isi
+- [Fitur](#fitur)
+- [Unduh dan pasang](#unduh-dan-pasang)
+- [Memulai dan memasukkan API key](#memulai-dan-memasukkan-api-key)
+- [Memori dan percakapan](#memori-dan-percakapan)
+- [Otomasi Android dan Termux](#otomasi-android-dan-termux)
+- [Keamanan dan privasi](#keamanan-dan-privasi)
+- [Build dari source](#build-dari-source)
+- [Struktur repo](#struktur-repo)
+- [Batasan yang diketahui](#batasan-yang-diketahui)
+- [Lisensi](#lisensi)
 
-## Kemampuan yang disiapkan
+## Fitur
 
-- Chat AI dengan pilihan provider/API key yang didukung aplikasi.
-- Memori jangka panjang lokal untuk fakta/proyek/preferensi, dengan pencarian dan penghapusan melalui alat memori yang memerlukan persetujuan.
-- Riwayat beberapa percakapan, tombol **Percakapan Baru**, dan pemilih percakapan lama.
-- Jurnal hasil tool untuk membantu menghindari pengulangan pendekatan yang gagal; ini bukan pelatihan ulang model atau perubahan kode otomatis.
-- Salin pesan pengguna dan jawaban AI.
-- Input suara dan pembacaan jawaban lewat text-to-speech jika diaktifkan dan didukung perangkat.
-- Shortcut alur kerja untuk analisis pasar, keamanan siber, coding full-stack, dan riset.
-- Skill analisis forex, saham Indonesia/global, indeks, emas, perak, minyak, crypto, meme coin, spot, futures, serta makroekonomi.
-- Otomatisasi Android dan eksekusi coding melalui Termux setelah konfigurasi dan persetujuan pengguna.
-- Tema gelap hitam-merah.
+| Modul | Keterangan | Batasan |
+|---|---|---|
+| Chat AI | Chat dengan provider yang dikonfigurasi di aplikasi | Perlu API key dan internet untuk provider cloud |
+| Provider AI | Anthropic Claude, OpenAI, Google Gemini, dan OpenRouter jika didukung versi aplikasi | Harga dan akses model mengikuti provider; nama model bisa berubah |
+| API key | Disimpan memakai Android Keystore dan penyimpanan privat aplikasi | Tetap jangan bagikan perangkat yang sudah dibuka kuncinya |
+| Memori jangka panjang | Menyimpan fakta/proyek/preferensi lokal; bisa dicari atau dikelola melalui alat memori dengan persetujuan | Bukan memori sempurna; fakta sensitif jangan disimpan |
+| Riwayat chat | Percakapan baru dan membuka riwayat yang disimpan | Hapus chat tidak otomatis menghapus fakta di memori terpisah |
+| Peningkatan berbasis hasil | Jurnal kategori hasil tool membantu menghindari pengulangan langkah yang gagal | Tidak melatih ulang model dan tidak menulis ulang source code secara mandiri |
+| Input dan output suara | Input suara serta text-to-speech jika diaktifkan dan tersedia pada perangkat | Membutuhkan izin mikrofon/pengaturan suara |
+| Skill | Coding full-stack, riset, review kode, respons insiden, pentest berizin, analisis pasar | Skill adalah panduan; bukan bukti tool/data real-time tersedia |
+| Kontrol Android | Sebagian aksi UI melalui Accessibility Service dan tool perangkat | Hanya setelah izin pengguna; tidak semua aplikasi mengizinkan otomasi |
+| Termux | Menjalankan perintah melalui integrasi Termux yang kompatibel | Periksa perintah sebelum menyetujui; jangan jalankan perintah asing |
+| Layanan latar belakang | Service dengan notifikasi persisten untuk tugas yang diaktifkan pengguna | Android/OEM dapat membatasi proses; pengguna tetap bisa menghentikannya |
+| Tema | Identitas gelap hitam-merah dan ikon robot bertopeng | Animasi video pertarungan anime belum termasuk dalam build ini |
 
-Skill analisis keuangan **tidak menyediakan feed harga sendiri**. Harga, chart, berita Forex Factory, kalender CPI, dan data real-time hanya dapat dianalisis bila sumbernya benar-benar dapat diakses melalui browser/tool/API yang tersedia. Jika sumber belum terhubung, agen wajib menyatakan batasannya dan tidak boleh mengarang data.
+### Analisis pasar dan keamanan
+Skill dapat membantu menganalisis forex, saham Indonesia/global, indeks, emas/perak, minyak, crypto, spot/futures, serta berita makroekonomi. Aplikasi tidak menjamin feed harga otomatis: harga, chart, kalender ekonomi, dan berita hanya real-time jika sumber data benar-benar terhubung. Jika tidak ada sumber, agen harus menyatakan keterbatasannya, bukan mengarang angka.
 
-Untuk order live melalui MT5 atau broker lain, default adalah analisis/simulasi. Sebelum eksekusi, pengguna harus melihat ringkasan instrumen, arah, ukuran, leverage, entry, stop loss, take profit, dan risiko lalu memberi persetujuan eksplisit. Analisis tidak menjamin profit.
+Gunakan fungsi keamanan siber hanya pada sistem yang kamu miliki atau yang ada izin tertulisnya. Untuk trading live, perlakukan jawaban AI sebagai analisis; sebelum tindakan finansial, cek instrumen, arah, ukuran posisi, leverage, entry, stop-loss, take-profit, dan risiko secara mandiri. Tidak ada jaminan profit.
 
-## Build melalui GitHub Actions
+## Unduh dan pasang
 
-1. Buka **Actions**.
-2. Pilih **K1pL4y Agent Android APK**.
-3. Jalankan workflow pada branch `master` atau tunggu build otomatis setelah perubahan.
-4. Tunggu workflow selesai dengan status sukses.
-5. Unduh artifact debug APK dari run tersebut.
+1. Buka [GitHub Releases](https://github.com/jambudio336-hue/KiplayCllaw/releases).
+2. Pilih rilis terbaru yang bertanda **Test Build**.
+3. Unduh `app-release.apk`.
+4. Buka file pada Android dan izinkan pemasangan dari sumber tersebut jika Android meminta.
+5. Setelah selesai, buka aplikasi dan lanjutkan ke Pengaturan.
 
-## Persyaratan dan izin
+**Penting:** APK uji saat ini ditandatangani dengan debug key. APK ini bukan rilis produksi dan belum boleh dipakai sebagai distribusi Play Store. Untuk build produksi dibutuhkan signing key yang dikelola pemilik aplikasi dan disimpan sebagai secret, bukan di repo.
 
-- Android 8.0 (API 26) atau lebih baru.
-- API key provider AI harus dikonfigurasi; pemakaian provider mungkin berbayar.
-- Aksesibilitas, mikrofon, overlay, lokasi, dan izin lain hanya aktif setelah pengguna mengizinkan.
-- Integrasi Termux membutuhkan Termux 0.109+, `allow-external-apps = true`, dan izin Run Command. Periksa setiap perintah sebelum menyetujuinya.
+## Memulai dan memasukkan API key
 
-## Memori dan peningkatan diri
+1. Buka aplikasi **K1pL4y_Agent.pro**.
+2. Buka ikon **Pengaturan** di bar atas.
+3. Di bagian **Penyedia AI**, pilih provider yang ingin dipakai.
+4. Di bagian provider yang dipilih, masukkan API key dari dashboard resmi provider tersebut.
+5. Tekan **Simpan**. Setelah status menunjukkan kunci tersimpan, pilih provider itu sebagai provider aktif.
+6. Pastikan nama model yang dipilih tersedia pada akun dan endpoint provider.
+7. Kembali ke chat dan kirim pertanyaan sederhana untuk menguji koneksi.
 
-Fakta yang disimpan tetap berada di database lokal perangkat. Agen dapat mencari dan mengelola memori dengan persetujuan pengguna. Hapus riwayat percakapan tidak otomatis menghapus fakta memori terpisah; kelola keduanya secara terpisah. Jurnal hasil hanya membantu memilih pendekatan berikutnya, bukan menjamin agen selalu mengingat semuanya. Perubahan kode atau pembaruan aplikasi harus ditinjau, diuji, dan disetujui sebelum dipasang.
+### Mendapatkan API key
+- **Anthropic:** buat key melalui dashboard resmi Anthropic.
+- **OpenAI:** buat key melalui platform resmi OpenAI.
+- **Google Gemini:** buat key melalui Google AI Studio.
+- **OpenRouter:** buat key melalui dashboard resmi OpenRouter.
 
-## Keamanan
+Buat key hanya pada situs resmi provider. Pemakaian API dapat berbayar dan mengikuti limit akun. Jangan memasukkan API key ke chat AI, source code, README, screenshot, issue, atau commit Git. Jika key bocor, cabut/revoke dari dashboard provider dan buat key baru. Aplikasi menyimpan key secara lokal terenkripsi, tetapi malware atau orang yang memiliki kendali atas perangkat tetap dapat menimbulkan risiko.
 
-Agen dapat berinteraksi dengan UI dan meminta izin sensitif. Konfirmasi manusia harus tetap aktif untuk transaksi keuangan, pesan eksternal, perubahan akun, penghapusan, perintah berisiko, dan tindakan yang tidak dapat dibatalkan. Jangan bagikan OTP, password, atau kredensial bank kepada agen.
+## Memori dan percakapan
 
-## Lisensi dan distribusi
+- Tekan ikon **Percakapan Baru** untuk mulai chat terpisah.
+- Tekan ikon **Riwayat** untuk membuka percakapan sebelumnya.
+- Alat `memory.manage` mendukung penyimpanan, pencarian, dan penghapusan fakta dengan persetujuan.
+- Memori disimpan di database lokal perangkat. Jangan menyimpan password, OTP, token sesi, data bank, atau rahasia.
+- Menghapus riwayat chat tidak otomatis menghapus fakta yang tersimpan di memori. Kelola keduanya secara terpisah.
+- Jurnal hasil tool mencatat kategori hasil untuk membantu strategi berikutnya; bukan self-training, bukan self-rewriting, dan tidak menjamin semua detail selalu diingat.
 
-Sebelum APK dibagikan secara publik atau komersial, verifikasi asal-usul kode dan lisensi sumber yang diadaptasi. Repositori publik tidak otomatis memberikan hak redistribusi. Pertahankan seluruh atribusi dan pemberitahuan yang diwajibkan oleh lisensi yang berlaku.
+## Otomasi Android dan Termux
 
-## Catatan build saat ini
+### Izin Android
+Aktifkan hanya fitur yang benar-benar dibutuhkan:
+1. Buka **Pengaturan Android → Aksesibilitas → Aplikasi yang diunduh/layanan terpasang**.
+2. Pilih layanan K1pL4y_Agent.pro dan baca keterangannya sebelum mengaktifkan.
+3. Untuk fitur terkait notifikasi, overlay, mikrofon, lokasi, kamera, atau layanan latar belakang, ikuti permintaan izin Android masing-masing.
+4. Matikan izin yang tidak digunakan dari pengaturan sistem.
 
-Application ID Android: `com.k1play.agentpro`. APK saat ini masih eksperimental, membutuhkan pengujian perangkat nyata, dan belum ditandatangani dengan kunci produksi. Nama paket internal dan seluruh sumber perlu ditinjau lagi sebagai bagian dari migrasi branding menyeluruh.
+Nama menu dapat berbeda pada tiap merek Android. Jika Android menampilkan **Setelan dibatasi**, jangan mencoba melewati perlindungan secara membabi buta; pastikan APK berasal dari sumber yang kamu percayai dan ikuti prosedur resmi perangkat.
+
+### Termux
+- Pasang Termux dari sumber resmi proyek Termux.
+- Periksa versi dan pengaturan izin Run Command sesuai dokumentasi Termux yang sedang berlaku.
+- Aktifkan integrasi eksternal hanya jika memang diperlukan.
+- Baca setiap perintah dan output sebelum menyetujui tindakan. Jangan memberikan persetujuan otomatis untuk skrip yang tidak dipahami.
+
+## Keamanan dan privasi
+
+- Operasi baca yang terdaftar dapat berjalan otomatis sesuai profil izin. Tool yang tidak dikenal, perubahan data, pengiriman pesan, penghapusan, skrip/Termux, dan pengelolaan memori harus meminta persetujuan.
+- Persetujuan aplikasi bukan pengganti review manusia. Periksa penerima, konten, target, dan dampak sebelum mengizinkan tindakan.
+- Layanan latar belakang harus tampak melalui notifikasi dan tetap bisa dihentikan oleh pengguna atau sistem.
+- Jangan menonaktifkan kontrol keamanan Android untuk memaksa fitur bekerja.
+- Lihat [SECURITY.md](SECURITY.md) untuk prinsip keamanan dan pelaporan kerentanan.
+- Jangan menganggap APK ini sebagai produk yang telah lolos audit independen.
+
+## Build dari source
+
+Persyaratan dasar:
+- JDK 17
+- Android SDK untuk compileSdk 35
+- Gradle Wrapper yang tersedia di repo
+- Koneksi internet untuk mengambil dependensi
+
+Build lokal:
+
+```bash
+chmod +x ./gradlew
+./gradlew testDebugUnitTest
+./gradlew lintDebug
+./gradlew assembleDebug
+./gradlew assembleRelease
+```
+
+Di GitHub, buka tab **Actions**, pilih workflow Android APK, lalu unduh artifact setelah semua pemeriksaan berhasil. Workflow harus gagal jika tes gagal; jangan mengabaikan status tes merah.
+
+## Struktur repo
+
+```text
+.github/workflows/       CI build, tes, dan rilis APK uji
+app/src/main/kotlin/     kode aplikasi Android/Kotlin
+app/src/main/res/        ikon, tema, dan resource Android
+app/src/main/assets/     skill AI dan aset model lokal
+app/src/test/            tes unit
+app/src/androidTest/     tes instrumentasi
+README.md                panduan proyek
+CHANGELOG.md             catatan perubahan
+SECURITY.md              prinsip keamanan
+LICENSE.md               status lisensi
+```
+
+## Batasan yang diketahui
+
+- Build belum merupakan rilis produksi yang ditandatangani dengan kunci privat.
+- Fitur provider cloud membutuhkan key, koneksi, kuota, dan model yang masih tersedia.
+- Tidak semua operasi perangkat dapat dilakukan pada semua versi Android.
+- Video anime pertarungan loop dengan efek suara belum disertakan; penambahan memerlukan aset video/audio yang dibuat sendiri atau memiliki lisensi yang sesuai, serta kontrol audio yang jelas.
+- Menjalankan proses terus-menerus tidak dapat dijamin pada Android; OS dapat menghentikan proses demi keamanan, baterai, atau memori.
+- Belum ada klaim bahwa seluruh repo bebas bug atau sudah lulus audit keamanan independen.
+
+## Lisensi
+
+Lihat [LICENSE.md](LICENSE.md). Status lisensi upstream perlu dikonfirmasi sebelum distribusi publik atau komersial. Jangan menganggap repo ini memiliki lisensi open-source yang sudah disahkan sampai hal itu dibereskan.
