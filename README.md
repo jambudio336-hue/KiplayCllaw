@@ -21,6 +21,18 @@ A push to `master` starts the debug and test-release workflows automatically. Ch
 - An AI provider API key configured in the app. API usage may cost money; check provider pricing before use.
 - Accessibility and other permissions must be enabled by the device owner. Grant only permissions needed for features you choose to use.
 
+## Advanced agent capabilities
+
+The system prompt now includes a structured problem-solving protocol for planning, comparing approaches, inspecting project context, verifying results, and reporting uncertainty. Bundled specialist skills provide repeatable workflows for:
+
+- Full-stack engineering across web, Android, and backend projects
+- Secure code review and application security
+- Authorized penetration testing with scope, evidence, and remediation
+- Defensive incident response
+- Evidence-based research and technical comparisons
+
+Skills are loaded into the agent context from bundled assets and user-created local skills. These instructions improve the agent's workflow but do not make every model an expert automatically; results depend on the configured model, available tools, network access, and actual test coverage. Security testing must stay within explicitly authorized scope.
+
 ## Termux coding integration\n\nThe `termux.exec` tool can run coding, build, and test commands in Termux and return their output. It requires Termux version 0.109 or newer, the app installed as `com.termux`, and the following one-time setup:\n\n1. In Termux, edit `~/.termux/termux.properties` and set `allow-external-apps = true`, then restart Termux.\n2. In Android Settings → Apps → K1pL4y_Agent.pro → Permissions / Additional permissions, grant **Run commands in Termux environment** if Android exposes that permission.\n3. In the agent, approve each `termux.exec` request. The tool is configured to ask for approval even in the Full Auto profile.\n4. Start with a harmless command such as `pwd` or `python --version` before asking it to modify a project.\n\nCommands run with the Termux user's privileges, so inspect commands before approving them. A timeout does not guarantee that Termux killed the underlying process. If Termux is missing, the permission is not granted, or external apps are disabled, the integration will return an error.\n\n## Safety
 
 This app can interact with device UI and may request sensitive permissions. Keep human confirmation enabled for messages, account changes, purchases, deletion, and other consequential actions. Never share OTPs, passwords, or banking credentials with an agent.
