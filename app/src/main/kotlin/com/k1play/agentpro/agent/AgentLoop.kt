@@ -121,6 +121,13 @@ class AgentLoop @Inject constructor(
         _state.value = AgentState.IDLE
     }
 
+    fun clearCurrentConversationContext() {
+        currentJob?.cancel()
+        conversationHistory.clear()
+        loadedConversationId = conversationStore.currentId()
+        _state.value = AgentState.IDLE
+    }
+
     suspend fun openConversation(id: String) {
         currentJob?.cancel()
         _state.value = AgentState.IDLE
