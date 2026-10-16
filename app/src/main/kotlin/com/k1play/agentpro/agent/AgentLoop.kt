@@ -4,6 +4,7 @@ import android.util.Log
 import com.k1play.agentpro.approval.ApprovalQueue
 import com.k1play.agentpro.approval.ApprovalRequest
 import com.k1play.agentpro.approval.ApprovalResult
+import com.k1play.agentpro.approval.ApprovalPolicyManager
 import com.k1play.agentpro.config.AppConfig
 import com.k1play.agentpro.config.Identity
 import com.k1play.agentpro.memory.ConversationStore
@@ -25,6 +26,7 @@ class AgentLoop @Inject constructor(
     private val providerManager: ProviderManager,
     private val toolRegistry: ToolRegistry,
     private val approvalQueue: ApprovalQueue,
+    private val approvalPolicyManager: ApprovalPolicyManager,
     private val conversationStore: ConversationStore,
     private val semanticMemory: SemanticMemory,
     private val identity: Identity,
@@ -315,6 +317,8 @@ class AgentLoop @Inject constructor(
     }
 
     private suspend fun checkApproval(toolName: String, params: JsonObject): Boolean {
+        // Restore explicit per-tool "Always Allow" choices after app restarts or profile changes.
+        approvalPolicyManager.restoreSavedPolicies()
         val policy = autonomyPolicy.getPolicy(toolName)
         return when (policy) {
             ToolApprovalPolicy.AUTO -> true
@@ -328,7 +332,14 @@ class AgentLoop @Inject constructor(
                 )
                 val result = approvalQueue.request(request)
                 _state.value = AgentState.EXECUTING_TOOLS
-                result == ApprovalResult.APPROVED
+                when (result) {
+                    ApprovalResult.APPROVED -> true
+                    ApprovalResult.ALWAYS_ALLOW -> {
+                        approvalPolicyManager.handleResult(toolName, result)
+                        true
+                    }
+                    ApprovalResult.DENIED -> false
+                }
             }
         }
     }
