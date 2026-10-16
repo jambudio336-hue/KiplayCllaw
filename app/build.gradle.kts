@@ -61,28 +61,8 @@ android {
     }
 }
 
-tasks.register("enableAccessibility") {
-    description = "Enable K1pL4y_Agent.pro accessibility service via adb"
-    doLast {
-        val adb = android.adbExecutable.absolutePath
-        exec {
-            commandLine(adb, "shell", "settings", "put", "secure",
-                "enabled_accessibility_services",
-                "com.k1play.agentpro/com.k1play.agentpro.service.K1pL4yAgentProAccessibility")
-        }
-        exec {
-            commandLine(adb, "shell", "settings", "put", "secure",
-                "accessibility_enabled", "1")
-        }
-        logger.lifecycle("Accessibility service enabled for K1pL4y_Agent.pro")
-    }
-}
-
-tasks.whenTaskAdded {
-    if (name == "installDebug") {
-        finalizedBy("enableAccessibility")
-    }
-}
+// Accessibility must be enabled explicitly by the user in Android Settings.
+// Installing a debug build never changes secure accessibility settings automatically.
 
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
