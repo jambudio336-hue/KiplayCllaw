@@ -12,7 +12,7 @@ on:
       - ".github/workflows/android-release.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-release-${{ github.ref }}
@@ -48,10 +48,22 @@ jobs:
           ls -lh app/build/outputs/apk/release/app-release.apk
           sha256sum app/build/outputs/apk/release/app-release.apk
 
-      - name: Upload release variant APK
+      - name: Upload release variant APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: K1pL4y_Agent-pro-release-test
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0-test-build-${{ github.run_number }}
+          name: K1pL4y_Agent.pro v0.1.0 Test Build #${{ github.run_number }}
+          body: |
+            Automated test build of K1pL4y_Agent.pro.
+
+            This APK is signed with the Android debug signing key for testing only. It is not a production or Play Store release.
+          prerelease: true
+          files: app/build/outputs/apk/release/app-release.apk
