@@ -89,13 +89,14 @@ class AppAutomateTool @Inject constructor(
     private val overlayVisibility: OverlayVisibilityController
 ) : Tool {
     override val name = "app.automate"
-    override val description = """Automate actions in other apps using AccessibilityService.
-Actions: tap (by text or coordinates), type (into focused field), swipe (left/right/up/down for card swiping), scroll (up/down), back, home, find_element.
-Requires accessibility permission enabled in system settings."""
+    override val description = """General-purpose UI automation for the foreground Android app using the user's enabled AccessibilityService.
+Actions: tap by visible text/content description or screen coordinates; long_press by visible label or coordinates; type into the currently focused/identified editable field; swipe and scroll; back, home, recents; find_element.
+Workflow: call screen.read first, act on one step, wait/read again to verify, and use screen.capture + vision.analyze when charts, canvas, or visual controls are not exposed as accessible text.
+Works only where Android and the target app expose/allow the UI action. It does not bypass app security, login, CAPTCHA, biometrics, paywalls, or protected content. Sensitive actions still require the configured approval policy."""
     override val parameters = ToolParameters(
         properties = mapOf(
             "action" to ParameterProperty("string", "Action to perform",
-                enum = listOf("tap", "type", "swipe", "scroll", "back", "home", "recents", "find_element")),
+                enum = listOf("tap", "long_press", "type", "swipe", "scroll", "back", "home", "recents", "find_element")),
             "text" to ParameterProperty("string", "Text to type, or text of element to tap/find"),
             "x" to ParameterProperty("integer", "X coordinate for tap"),
             "y" to ParameterProperty("integer", "Y coordinate for tap"),
@@ -112,7 +113,7 @@ Requires accessibility permission enabled in system settings."""
 
         return try {
             // Hide overlay for tap/swipe so it doesn't interfere with gestures
-            if (action in listOf("tap", "swipe")) {
+            if (action in listOf("tap", "long_press", "swipe")) {
                 overlayVisibility.requestHide(500)
                 delay(100) // Wait for overlay to disappear
             }
