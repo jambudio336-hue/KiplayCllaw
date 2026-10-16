@@ -256,20 +256,59 @@ Must have a chat open in the foreground with a visible input field."""
             // Small delay for UI to update
             kotlinx.coroutines.delay(300)
 
-            // Step 3: Tap the send button
+            // Step 3: Tap a localized send control and check the action result.
+            // Accessibility labels differ between WhatsApp versions and device languages.
+            val sendLabels = "Send message|Kirim pesan|Send|Kirim"
             val (sendReceiver, sendDeferred) = AccessibilityBridge.createReceiver()
             val sendIntent = Intent(K1pL4yAgentProAccessibility.ACTION_COMMAND).apply {
                 putExtra("result_receiver", sendReceiver)
                 putExtra("action", "tap")
-                putExtra("text", "Send")
+                putExtra("text", sendLabels)
                 setPackage(context.packageName)
             }
             context.sendBroadcast(sendIntent)
             val sendResult = AccessibilityBridge.awaitResult(sendDeferred)
+            val sendSuccess = sendResult["success"]?.jsonPrimitive?.booleanOrNull ?: false
+            if (!sendSuccess) {
+                return ToolResult.error(
+                    "Message text was entered, but no send button could be activated. " +
+                    "Nothing is reported as sent. Check that the correct chat is open and try again. " +
+                    (sendResult["error"]?.jsonPrimitive?.contentOrNull ?: "")
+                )
+            }
+
+            // Read the UI after the click. This verifies the app UI response only;
+            // it cannot prove server delivery or that the recipient read the message.
+            kotlinx.coroutines.delay(800)
+            val (verifyReceiver, verifyDeferred) = AccessibilityBridge.createReceiver()
+            val verifyIntent = Intent(K1pL4yAgentProAccessibility.ACTION_COMMAND).apply {
+                putExtra("result_receiver", verifyReceiver)
+                putExtra("action", "read_screen")
+                setPackage(context.packageName)
+            }
+            context.sendBroadcast(verifyIntent)
+            val verifyResult = AccessibilityBridge.awaitResult(verifyDeferred)
+            val elements = verifyResult["elements"]?.jsonArray ?: JsonArray(emptyList())
+            val visibleOutsideInput = elements.any { element ->
+                val obj = element.jsonObject
+                val elementText = obj["text"]?.jsonPrimitive?.contentOrNull.orEmpty()
+                val editable = obj["editable"]?.jsonPrimitive?.booleanOrNull ?: false
+                !editable && elementText.contains(message, ignoreCase = false)
+            }
 
             ToolResult.success(buildJsonObject {
-                put("sent", true)
+                put("submitted_to_app", true)
+                put("ui_action_succeeded", true)
+                put("message_text_visible_outside_input", visibleOutsideInput)
+                put("delivery_confirmed", false)
                 put("message", message)
+                put(
+                    "status",
+                    if (visibleOutsideInput)
+                        "Send control activated and message text is visible in the chat UI; delivery is not confirmed."
+                    else
+                        "Send control activated, but the chat UI did not provide enough evidence to verify submission or delivery."
+                )
             })
         } catch (e: Exception) {
             ToolResult.error("Reply failed: ${e.message}")
