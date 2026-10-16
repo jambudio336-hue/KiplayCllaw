@@ -19,6 +19,7 @@ class AutonomyPolicyTest {
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("calendar.query"))
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("file.read"))
         assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("settings.get"))
+        assertEquals(ToolApprovalPolicy.AUTO, policy.getPolicy("device.info"))
         assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("sms.read"))
         assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("location.get"))
         assertEquals(ToolApprovalPolicy.ASK, policy.getPolicy("screen.capture"))
