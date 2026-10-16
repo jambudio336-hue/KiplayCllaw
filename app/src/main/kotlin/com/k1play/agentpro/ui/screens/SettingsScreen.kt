@@ -197,7 +197,7 @@ fun SettingsScreen(
                         singleLine = true
                     )
                     if (nameInput != userName) {
-                        TextButton(onClick = { viewModel.setPenggunaName(nameInput) }) {
+                        TextButton(onClick = { viewModel.setUserName(nameInput) }) {
                             Text("Simpan")
                         }
                     }
@@ -279,28 +279,28 @@ fun SettingsScreen(
                         Switch(
                             checked = overlayEnabled,
                             onCheckedChange = { enabled ->
-                                if (enabled && !Pengaturan.canDrawJendela mengambangs(context)) {
+                                if (enabled && !Settings.canDrawOverlays(context)) {
                                     val intent = Intent(
-                                        Pengaturan.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:${context.packageName}")
                                     )
                                     context.startActivity(intent)
                                 } else {
-                                    viewModel.setJendela mengambangEnabled(enabled)
+                                    viewModel.setOverlayEnabled(enabled)
                                     if (enabled) {
-                                        context.startForegroundLayanan(
-                                            Intent(context, Jendela mengambangLayanan::class.java)
+                                        context.startForegroundService(
+                                            Intent(context, FloatingOverlayService::class.java)
                                         )
                                     } else {
-                                        context.stopLayanan(
-                                            Intent(context, Jendela mengambangLayanan::class.java)
+                                        context.stopService(
+                                            Intent(context, FloatingOverlayService::class.java)
                                         )
                                     }
                                 }
                             }
                         )
                     }
-                    if (overlayEnabled && !Pengaturan.canDrawJendela mengambangs(context)) {
+                    if (overlayEnabled && !Settings.canDrawOverlays(context)) {
                         Text(
                             "Jendela mengambang permission required. Tap the toggle to grant.",
                             style = MaterialTheme.typography.bodySmall,
@@ -321,7 +321,7 @@ fun SettingsScreen(
                         Text("Aktifkan input suara")
                         Switch(
                             checked = voiceEnabled,
-                            onCheckedChange = { viewModel.setSuaraEnabled(it) }
+                            onCheckedChange = { viewModel.setVoiceEnabled(it) }
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -360,15 +360,15 @@ fun SettingsScreen(
                             onCheckedChange = { enabled ->
                                 viewModel.setWakeWordEnabled(enabled)
                                 if (enabled) {
-                                    context.startForegroundLayanan(
-                                        Intent(context, WakeWordLayanan::class.java).apply {
-                                            action = WakeWordLayanan.ACTION_START
+                                    context.startForegroundService(
+                                        Intent(context, WakeWordService::class.java).apply {
+                                            action = WakeWordService.ACTION_START
                                         }
                                     )
                                 } else {
-                                    context.startLayanan(
-                                        Intent(context, WakeWordLayanan::class.java).apply {
-                                            action = WakeWordLayanan.ACTION_STOP
+                                    context.startService(
+                                        Intent(context, WakeWordService::class.java).apply {
+                                            action = WakeWordService.ACTION_STOP
                                         }
                                     )
                                 }
@@ -456,7 +456,7 @@ fun SettingsScreen(
 private fun ApiKeyInput(
     providerType: String,
     hasKey: Boolean,
-    onSimpan: (String) -> Unit,
+    onSave: (String) -> Unit,
     onRemove: () -> Unit
 ) {
     var newKey by remember { mutableStateOf("") }
@@ -489,7 +489,7 @@ private fun ApiKeyInput(
             )
             if (newKey.length >= 10) {
                 IconButton(onClick = {
-                    onSimpan(newKey)
+                    onSave(newKey)
                     newKey = ""
                     editing = false
                 }) {
