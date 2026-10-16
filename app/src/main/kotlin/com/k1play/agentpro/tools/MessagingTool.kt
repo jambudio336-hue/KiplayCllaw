@@ -335,7 +335,7 @@ Must have a chat open in the foreground with a visible input field."""
             }
 
             ToolResult.success(buildJsonObject {
-                put("submitted_to_app", true)
+                put("submitted_to_app", visibleOutsideInput)
                 put("ui_action_succeeded", true)
                 put("message_text_visible_outside_input", visibleOutsideInput)
                 put("delivery_confirmed", false)
