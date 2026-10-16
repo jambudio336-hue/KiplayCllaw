@@ -1,57 +1,56 @@
 # K1pL4y_Agent.pro
 
-Android AI agent project based on the CellClaw source currently present in this repository.
+Asisten AI Android eksperimental untuk rekayasa perangkat lunak full-stack, otomatisasi yang disetujui pengguna, riset keamanan siber, dan analisis pasar keuangan.
 
-> **Development status:** experimental. CI builds are not a substitute for testing on a physical Android device. Self-improvement currently means learning from recent tool outcomes; it does not retrain the AI model or rewrite the APK by itself.
+> **Status:** masih tahap pengembangan. APK uji bukan rilis produksi. Fitur real-time bergantung pada koneksi sumber data, API, izin perangkat, dan tool yang benar-benar tersedia.
 
-## Build an APK on GitHub
+## Unduh APK uji
 
-1. Open the **Actions** tab.
-2. Select **K1pL4y Agent Android APK**.
-3. Press **Run workflow** on branch `master`.
-4. Wait for the workflow to finish successfully.
-5. Open the completed run and download the `K1pL4y_Agent-pro-debug` artifact ZIP.
-6. Extract the ZIP to get `app-debug.apk`, then install it on your Android device.
+1. Buka tab **Releases**: https://github.com/jambudio336-hue/KiplayCllaw/releases
+2. Pilih rilis terbaru dengan label **Test Build**.
+3. Unduh `app-release.apk` dan pasang di Android.
+4. APK uji saat ini ditandatangani dengan debug key; jangan gunakan sebagai rilis produksi atau Play Store.
 
-A push to `master` starts the debug and test-release workflows automatically. Check the **Releases** page for a test APK when the release workflow finishes successfully; use the Actions artifact if a Release asset is not yet available.
+Jika rilis belum tersedia, buka tab **Actions** dan unduh artifact dari workflow yang berhasil.
 
-## Requirements
+## Kemampuan yang disiapkan
 
-- Android 8.0 (API 26) or newer, according to the current Gradle configuration.
-- An AI provider API key configured in the app. API usage may cost money; check provider pricing before use.
-- Accessibility and other permissions must be enabled by the device owner. Grant only permissions needed for features you choose to use.
+- Chat AI dengan pilihan provider/API key yang didukung aplikasi.
+- Memori lokal dan riwayat percakapan yang dapat dihapus.
+- Salin pesan pengguna dan jawaban AI.
+- Input suara dan pembacaan jawaban lewat text-to-speech jika diaktifkan dan didukung perangkat.
+- Shortcut alur kerja untuk analisis pasar, keamanan siber, coding full-stack, dan riset.
+- Skill analisis forex, saham Indonesia/global, indeks, emas, perak, minyak, crypto, meme coin, spot, futures, serta makroekonomi.
+- Otomatisasi Android dan eksekusi coding melalui Termux setelah konfigurasi dan persetujuan pengguna.
+- Tema gelap hitam-merah.
 
-## Advanced agent capabilities
+Skill analisis keuangan **tidak menyediakan feed harga sendiri**. Harga, chart, berita Forex Factory, kalender CPI, dan data real-time hanya dapat dianalisis bila sumbernya benar-benar dapat diakses melalui browser/tool/API yang tersedia. Jika sumber belum terhubung, agen wajib menyatakan batasannya dan tidak boleh mengarang data.
 
-The system prompt now includes a structured problem-solving protocol for planning, comparing approaches, inspecting project context, verifying results, and reporting uncertainty. Bundled specialist skills provide repeatable workflows for:
+Untuk order live melalui MT5 atau broker lain, default adalah analisis/simulasi. Sebelum eksekusi, pengguna harus melihat ringkasan instrumen, arah, ukuran, leverage, entry, stop loss, take profit, dan risiko lalu memberi persetujuan eksplisit. Analisis tidak menjamin profit.
 
-- Full-stack engineering across web, Android, and backend projects
-- Secure code review and application security
-- Authorized penetration testing with scope, evidence, and remediation
-- Defensive incident response
-- Evidence-based research and technical comparisons
+## Build melalui GitHub Actions
 
-Skills are loaded into the agent context from bundled assets and user-created local skills. These instructions improve the agent's workflow but do not make every model an expert automatically; results depend on the configured model, available tools, network access, and actual test coverage. Security testing must stay within explicitly authorized scope.
+1. Buka **Actions**.
+2. Pilih **K1pL4y Agent Android APK**.
+3. Jalankan workflow pada branch `master` atau tunggu build otomatis setelah perubahan.
+4. Tunggu workflow selesai dengan status sukses.
+5. Unduh artifact debug APK dari run tersebut.
 
-## Termux coding integration
+## Persyaratan dan izin
 
-The `termux.exec` tool can run coding, build, and test commands in Termux and return their output. It requires Termux version 0.109 or newer, the app installed as `com.termux`, and the following one-time setup:
+- Android 8.0 (API 26) atau lebih baru.
+- API key provider AI harus dikonfigurasi; pemakaian provider mungkin berbayar.
+- Aksesibilitas, mikrofon, overlay, lokasi, dan izin lain hanya aktif setelah pengguna mengizinkan.
+- Integrasi Termux membutuhkan Termux 0.109+, `allow-external-apps = true`, dan izin Run Command. Periksa setiap perintah sebelum menyetujuinya.
 
-1. In Termux, edit `~/.termux/termux.properties` and set `allow-external-apps = true`, then restart Termux.
-2. In Android Settings → Apps → K1pL4y_Agent.pro → Permissions / Additional permissions, grant **Run commands in Termux environment** if Android exposes that permission.
-3. In the agent, approve each `termux.exec` request. The tool is configured to ask for approval even in the Full Auto profile.
-4. Start with a harmless command such as `pwd` or `python --version` before asking it to modify a project.
+## Keamanan
 
-Commands run with the Termux user's privileges, so inspect commands before approving them. A timeout does not guarantee that Termux killed the underlying process. If Termux is missing, the permission is not granted, or external apps are disabled, the integration will return an error.
+Agen dapat berinteraksi dengan UI dan meminta izin sensitif. Konfirmasi manusia harus tetap aktif untuk transaksi keuangan, pesan eksternal, perubahan akun, penghapusan, perintah berisiko, dan tindakan yang tidak dapat dibatalkan. Jangan bagikan OTP, password, atau kredensial bank kepada agen.
 
-## Safety
+## Lisensi dan distribusi
 
-This app can interact with device UI and may request sensitive permissions. Keep human confirmation enabled for messages, account changes, purchases, deletion, and other consequential actions. Never share OTPs, passwords, or banking credentials with an agent.
+Sebelum APK dibagikan secara publik atau komersial, verifikasi asal-usul kode dan lisensi sumber yang diadaptasi. Repositori publik tidak otomatis memberikan hak redistribusi. Pertahankan seluruh atribusi dan pemberitahuan yang diwajibkan oleh lisensi yang berlaku.
 
-## Source and license
+## Catatan build saat ini
 
-This repository currently contains source derived from CellClaw. Before distributing modified APKs publicly or commercially, verify the upstream repository's license and comply with its terms. A public GitHub repository alone does not grant permission to redistribute copyrighted code. Keep upstream attribution and notices as required by the applicable license.
-
-## Current build scope
-
-CI runs unit tests and builds debug and test-release APKs. The test-release build uses a debug signing key and is not suitable for production or Play Store distribution. The Android application ID remains `com.cellclaw`; the launcher label is `K1pL4y_Agent.pro`. Device-level testing and upstream license verification are still required.
+Application ID Android: `com.k1play.agentpro`. APK saat ini masih eksperimental, membutuhkan pengujian perangkat nyata, dan belum ditandatangani dengan kunci produksi. Nama paket internal dan seluruh sumber perlu ditinjau lagi sebagai bagian dari migrasi branding menyeluruh.
