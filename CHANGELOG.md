@@ -1,3 +1,9 @@
+## Unreleased — General app automation improvements
+- Expanded cross-app automation guidance: inspect foreground app, use accessibility labels or visual analysis, and verify state after each action.
+- Added a long-press accessibility action by visible label or screen coordinates.
+- Clarified that an existing signed-in session enables ordinary visible UI interaction only; it does not bypass authentication/security controls or authorize extraction of session tokens.
+- Added a safer TradingView/XAUUSD analysis workflow to the market analyst skill; no live market feed or trading accuracy is implied by these instructions.
+
 # Changelog
 
 Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan belum merupakan rilis produksi.
