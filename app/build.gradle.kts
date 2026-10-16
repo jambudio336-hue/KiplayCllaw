@@ -19,7 +19,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.cellclaw"
+        applicationId = "com.k1play.agentpro"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -62,19 +62,19 @@ android {
 }
 
 tasks.register("enableAccessibility") {
-    description = "Enable CellClaw accessibility service via adb"
+    description = "Enable K1pL4y_Agent.pro accessibility service via adb"
     doLast {
         val adb = android.adbExecutable.absolutePath
         exec {
             commandLine(adb, "shell", "settings", "put", "secure",
                 "enabled_accessibility_services",
-                "com.cellclaw/com.cellclaw.service.CellClawAccessibility")
+                "com.k1play.agentpro/com.cellclaw.service.CellClawAccessibility")
         }
         exec {
             commandLine(adb, "shell", "settings", "put", "secure",
                 "accessibility_enabled", "1")
         }
-        logger.lifecycle("Accessibility service enabled for CellClaw")
+        logger.lifecycle("Accessibility service enabled for K1pL4y_Agent.pro")
     }
 }
 
