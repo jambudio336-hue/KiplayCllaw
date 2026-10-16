@@ -83,25 +83,56 @@ fun ChatScreen(
         }
     }
 
+    if (showHistoryDialog) {
+        AlertDialog(
+            onDismissRequest = { showHistoryDialog = false },
+            title = { Text("Riwayat percakapan") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Tersimpan: ${messages.size} pesan")
+                    Text(
+                        messages.takeLast(8).joinToString("\n\n") {
+                            "${if (it.role == "user") "Kamu" else "K1pL4y_Agent.pro"}: ${it.content.take(180)}"
+                        }.ifBlank { "Belum ada riwayat percakapan." },
+                        maxLines = 12,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.clearHistory()
+                    showHistoryDialog = false
+                }) { Text("Hapus riwayat") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showHistoryDialog = false }) { Text("Tutup") }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("K1pL4y_Agent.pro", maxLines = 1) },
                 actions = {
+                    IconButton(onClick = { showHistoryDialog = true }) {
+                        Icon(Icons.Default.History, contentDescription = "Riwayat percakapan")
+                    }
                     if (pendingApprovals.isNotEmpty()) {
                         BadgedBox(badge = {
                             Badge { Text("${pendingApprovals.size}") }
                         }) {
                             IconButton(onClick = onNavigateToApprovals) {
-                                Icon(Icons.Default.Notifications, "Approvals")
+                                Icon(Icons.Default.Notifications, "Persetujuan")
                             }
                         }
                     }
                     IconButton(onClick = onNavigateToSkills) {
-                        Icon(Icons.Default.Star, "Skills")
+                        Icon(Icons.Default.Star, "Keahlian")
                     }
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, "Settings")
+                        Icon(Icons.Default.Settings, "Pengaturan")
                     }
                 }
             )
@@ -112,6 +143,15 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).animateContentSize().padding(horizontal = 12.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AssistChip(onClick = { inputText = "Analisis pasar terbaru: forex, saham, emas, crypto, makroekonomi dan berita. Sebutkan sumber serta waktu data." }, label = { Text("Analisis Pasar") }, leadingIcon = { Icon(Icons.Default.ShowChart, null) })
+                AssistChip(onClick = { inputText = "Bantu audit keamanan aplikasi milik saya dan berikan temuan serta perbaikan yang aman." }, label = { Text("Keamanan Siber") }, leadingIcon = { Icon(Icons.Default.Security, null) })
+                AssistChip(onClick = { inputText = "Bantu saya membangun aplikasi full-stack. Periksa struktur proyek, buat rencana, implementasikan dan jalankan tes." }, label = { Text("Koding Full-stack") }, leadingIcon = { Icon(Icons.Default.Code, null) })
+                AssistChip(onClick = { inputText = "Lakukan riset berbasis sumber tepercaya, cantumkan tautan, tanggal, dan ketidakpastian." }, label = { Text("Riset") }, leadingIcon = { Icon(Icons.Default.Search, null) })
+            }
             // Notification listener warning
             val notifListenerEnabled = remember(accessibilityConnected) {
                 val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners") ?: ""
@@ -240,7 +280,7 @@ fun ChatScreen(
                                 )
                             }
                         }) {
-                            Text("Enable")
+                            Text("Aktifkan")
                         }
                     }
                 }
@@ -257,7 +297,7 @@ fun ChatScreen(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(messages, key = { it.id }) { message ->
-                    ChatBubble(message = message)
+                    ChatBubble(message = message, onCopy = { clipboard.setPrimaryClip(ClipData.newPlainText("Pesan", message.content)) })
                 }
             }
 
