@@ -2,6 +2,12 @@
 
 Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan belum merupakan rilis produksi.
 
+## [0.1.2] — 2026-10-17
+- Fix OpenRouter requests that reused a Claude model ID.
+- Add `openrouter/free` as the default OpenRouter model.
+- Sync provider selection with the selected provider's default model.
+- Clarify the OpenRouter API key label and expected key prefix.
+
 ## [Unreleased] — 2026-10-17
 
 ### Keamanan
