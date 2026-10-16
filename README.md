@@ -76,7 +76,7 @@ Gunakan fungsi keamanan siber hanya pada sistem yang kamu miliki atau yang ada i
 - **Google Gemini:** buat key melalui Google AI Studio.
 - **OpenRouter:** buat key melalui dashboard resmi OpenRouter.
 
-Buat key hanya pada situs resmi provider. Pemakaian API dapat berbayar dan mengikuti limit akun. Jangan memasukkan API key ke chat AI, source code, README, screenshot, issue, atau commit Git. Jika key bocor, cabut/revoke dari dashboard provider dan buat key baru. Aplikasi menyimpan key secara lokal terenkripsi, tetapi malware atau orang yang memiliki kendali atas perangkat tetap dapat menimbulkan risiko.
+Buat key hanya pada situs resmi provider. Pemakaian API dapat berbayar dan mengikuti limit akun. Jangan memasukkan API key ke chat AI, source code, README, screenshot, issue, atau commit Git. Jika key bocor, cabut/revoke dari dashboard provider dan buat key baru. Aplikasi menyimpan key secara lokal terenkripsi, mengirim key Gemini melalui header HTTP alih-alih query URL, dan menonaktifkan backup data aplikasi. Malware atau orang yang memiliki kendali atas perangkat tetap dapat menimbulkan risiko.
 
 ## Memori dan percakapan
 
@@ -96,7 +96,7 @@ Aktifkan hanya fitur yang benar-benar dibutuhkan:
 3. Untuk fitur terkait notifikasi, overlay, mikrofon, lokasi, kamera, atau layanan latar belakang, ikuti permintaan izin Android masing-masing.
 4. Matikan izin yang tidak digunakan dari pengaturan sistem.
 
-Nama menu dapat berbeda pada tiap merek Android. Jika Android menampilkan **Setelan dibatasi**, jangan mencoba melewati perlindungan secara membabi buta; pastikan APK berasal dari sumber yang kamu percayai dan ikuti prosedur resmi perangkat.
+Pemasangan aplikasi tidak lagi otomatis mengubah pengaturan Aksesibilitas melalui ADB. Pengguna harus mengaktifkan layanan secara manual. Nama menu dapat berbeda pada tiap merek Android. Jika Android menampilkan **Setelan dibatasi**, jangan mencoba melewati perlindungan secara membabi buta; pastikan APK berasal dari sumber yang kamu percayai dan ikuti prosedur resmi perangkat.
 
 ### Termux
 - Pasang Termux dari sumber resmi proyek Termux.
@@ -106,7 +106,7 @@ Nama menu dapat berbeda pada tiap merek Android. Jika Android menampilkan **Sete
 
 ## Keamanan dan privasi
 
-- Operasi baca yang terdaftar dapat berjalan otomatis sesuai profil izin. Tool yang tidak dikenal, perubahan data, pengiriman pesan, penghapusan, skrip/Termux, dan pengelolaan memori harus meminta persetujuan.
+- Profil izin awal adalah **Hati-hati**: hanya pembacaan dasar yang terdaftar berjalan otomatis; SMS, lokasi, tangkapan layar, pengiriman, perubahan data, dan tool sensitif meminta persetujuan. Profil lain dapat dipilih secara sadar di Pengaturan. Tool yang tidak dikenal, perubahan data, pengiriman pesan, penghapusan, skrip/Termux, dan pengelolaan memori harus meminta persetujuan.
 - Persetujuan aplikasi bukan pengganti review manusia. Periksa penerima, konten, target, dan dampak sebelum mengizinkan tindakan.
 - Layanan latar belakang harus tampak melalui notifikasi dan tetap bisa dihentikan oleh pengguna atau sistem.
 - Jangan menonaktifkan kontrol keamanan Android untuk memaksa fitur bekerja.
