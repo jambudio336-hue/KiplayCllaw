@@ -51,6 +51,7 @@ class ChatViewModel @Inject constructor(
 
     init {
         configureProvider()
+        loadHistory()
         observeAgentEvents()
         observeAgentState()
         observeVoiceInput()
