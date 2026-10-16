@@ -51,7 +51,7 @@ class AutonomyPolicy @Inject constructor() {
     )
 
     init {
-        applyProfile(PermissionProfile.FULL_AUTO)
+        applyProfile(PermissionProfile.CAUTIOUS)
     }
 
     fun applyProfile(profile: PermissionProfile) {
@@ -62,10 +62,10 @@ class AutonomyPolicy @Inject constructor() {
                     if (tool in readOps && tool != "memory.manage") ToolApprovalPolicy.AUTO
                     else ToolApprovalPolicy.ASK
                 PermissionProfile.BALANCED ->
-                    if (tool in readOps && tool != "memory.manage") ToolApprovalPolicy.AUTO
+                    if (tool in basicReads) ToolApprovalPolicy.AUTO
                     else ToolApprovalPolicy.ASK
                 PermissionProfile.CAUTIOUS ->
-                    if (tool in basicReads) ToolApprovalPolicy.AUTO
+                    if (tool in setOf("contacts.search", "calendar.query", "file.read", "file.list", "settings.get", "browser.search")) ToolApprovalPolicy.AUTO
                     else ToolApprovalPolicy.ASK
             }
         }
