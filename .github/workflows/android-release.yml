@@ -20,9 +20,9 @@ concurrency:
 
 jobs:
   build-release-apk:
-    name: Build release variant APK
+    name: Verify and build release-test APK
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -39,16 +39,29 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build release APK
+      - name: Validate Gradle wrapper
+        run: ./gradlew --version
+
+      - name: Run unit tests (required)
+        run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: Run Android lint (required)
+        run: ./gradlew --no-daemon lintDebug
+
+      - name: Build release variant (test signing only)
         run: ./gradlew --no-daemon assembleRelease
 
-      - name: Verify release APK
+      - name: Verify APK and checksum
+        shell: bash
         run: |
-          test -s app/build/outputs/apk/release/app-release.apk
-          ls -lh app/build/outputs/apk/release/app-release.apk
-          sha256sum app/build/outputs/apk/release/app-release.apk
+          set -euo pipefail
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          file "$APK"
+          sha256sum "$APK"
+          ls -lh "$APK"
 
-      - name: Upload release variant APK artifact
+      - name: Upload release-test APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: K1pL4y_Agent-pro-release-test
@@ -56,14 +69,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish APK to GitHub Releases
+      - name: Publish prerelease APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.0-test-build-${{ github.run_number }}
-          name: K1pL4y_Agent.pro v0.1.0 Test Build #${{ github.run_number }}
+          name: K1pL4y_Agent.pro Test Build #${{ github.run_number }}
           body: |
-            Automated test build of K1pL4y_Agent.pro.
+            Automated test build for K1pL4y_Agent.pro.
 
-            This APK is signed with the Android debug signing key for testing only. It is not a production or Play Store release.
+            **Test build only:** signed with the Android debug signing key. Not for production or Play Store use.
+            Unit tests and Android lint must pass before this prerelease is published.
           prerelease: true
           files: app/build/outputs/apk/release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
