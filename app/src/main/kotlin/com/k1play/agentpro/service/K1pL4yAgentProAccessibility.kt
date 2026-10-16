@@ -237,7 +237,7 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
             val labels = listOf(node.text?.toString().orEmpty(), node.contentDescription?.toString().orEmpty())
             labels.any { label -> label.isNotBlank() && messageLabels.any { label.contains(it, ignoreCase = true) } }
         }
-        val target = labelled ?: if (candidates.size == 1) candidates.first() else null
+        val target = labelled ?: (if (candidates.size == 1) candidates.first() else null)
             ?: return errorResult("More than one editable field is visible and no message input could be identified safely")
 
         val clicked = target.performAction(AccessibilityNodeInfo.ACTION_CLICK)
