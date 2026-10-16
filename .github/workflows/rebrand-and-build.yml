@@ -1,0 +1,149 @@
+name: K1pL4y Agent Rebrand and APK
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebrand-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rename all internal source identifiers
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import shutil
+
+          root = Path(".")
+          old_brand = "Cell" + "Claw"
+          old_lower = "cell" + "claw"
+          old_pkg = "com." + old_lower
+          new_brand = "K1pL4yAgentPro"
+          new_pkg = "com.k1play.agentpro"
+
+          # Rewrite text source/config/docs so package references, classes, actions,
+          # comments, resources, and project strings all use the new identity.
+          for path in list(root.rglob("*")):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+              if path.name == "rebrand-and-build.yml":
+                  continue
+              if path.name.endswith((".png", ".jpg", ".jpeg", ".webp", ".tflite", ".jar", ".apk", ".ttf", ".woff", ".woff2", ".ico")):
+                  continue
+              try:
+                  original = path.read_text(encoding="utf-8")
+              except (UnicodeDecodeError, OSError):
+                  continue
+              updated = original.replace(old_pkg, new_pkg)
+              updated = updated.replace("com/" + old_lower, "com/k1play/agentpro")
+              updated = updated.replace(old_brand, new_brand)
+              updated = updated.replace(old_lower, "k1play_agent")
+              updated = updated.replace(old_brand.upper(), "K1PLAY_AGENT")
+              if path.as_posix() == "app/build.gradle.kts":
+                  updated = updated.replace('namespace = "com.cellclaw"', 'namespace = "com.k1play.agentpro"')
+              if updated != original:
+                  path.write_text(updated, encoding="utf-8")
+
+          # Move Kotlin packages for main, instrumented tests, and unit tests.
+          for base in (
+              Path("app/src/main/kotlin/com"),
+              Path("app/src/androidTest/kotlin/com"),
+              Path("app/src/test/kotlin/com"),
+          ):
+              old_dir = base / old_lower
+              new_dir = base / "k1play" / "agentpro"
+              if old_dir.exists():
+                  new_dir.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.move(str(old_dir), str(new_dir))
+
+          # Rename remaining filenames/directories and discard the obsolete logo bitmap.
+          for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+              if ".git" in path.parts or not path.exists():
+                  continue
+              if path.name.endswith("_1.png") and old_brand.lower() in path.name.lower():
+                  path.unlink()
+                  continue
+              name = path.name.replace(old_brand, new_brand).replace(old_lower, "k1play_agent")
+              if name != path.name:
+                  path.rename(path.with_name(name))
+
+          # Validate that the old product name and package are absent from tracked text files.
+          offenders = []
+          for path in root.rglob("*"):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (UnicodeDecodeError, OSError):
+                  continue
+              if old_brand in text or old_pkg in text or "com/" + old_lower in text:
+                  offenders.append(path.as_posix())
+          if offenders:
+              raise SystemExit("Old identifiers remain in: " + ", ".join(offenders[:30]))
+          print("Brand/package source scan passed.")
+          PY
+
+      - name: Commit source rebrand
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "Complete K1pL4y_Agent.pro source rebrand"
+            git push origin HEAD:master
+          else
+            echo "Source already uses the K1pL4y_Agent.pro identity."
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        shell: bash
+        run: |
+          chmod +x ./gradlew
+          ./gradlew testDebugUnitTest --no-daemon
+
+      - name: Build APKs
+        run: ./gradlew assembleDebug assembleRelease --no-daemon
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: K1pL4y_Agent-pro-Android-APKs
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish test APK release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0-k1play-${{ github.run_number }}
+          name: K1pL4y_Agent.pro Test Build ${{ github.run_number }}
+          prerelease: true
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+          body: |
+            Automated test APK for K1pL4y_Agent.pro.
+            Signed with the debug signing key for testing only. Not for production or Play Store use.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
