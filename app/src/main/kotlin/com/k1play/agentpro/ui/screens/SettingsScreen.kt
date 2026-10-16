@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.k1play.agentpro.agent.PermissionProfile
 import com.k1play.agentpro.agent.ToolApprovalPolicy
-import com.k1play.agentpro.service.overlay.FloatingOverlayService
+import com.k1play.agentpro.service.overlay.OverlayService
 import com.k1play.agentpro.ui.viewmodel.SettingsViewModel
 import com.k1play.agentpro.wakeword.WakeWordService
 
@@ -289,11 +289,11 @@ fun SettingsScreen(
                                     viewModel.setOverlayEnabled(enabled)
                                     if (enabled) {
                                         context.startForegroundService(
-                                            Intent(context, FloatingOverlayService::class.java)
+                                            Intent(context, OverlayService::class.java)
                                         )
                                     } else {
                                         context.stopService(
-                                            Intent(context, FloatingOverlayService::class.java)
+                                            Intent(context, OverlayService::class.java)
                                         )
                                     }
                                 }
