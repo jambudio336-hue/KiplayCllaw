@@ -2,7 +2,7 @@ package com.k1play.agentpro.ui.screens
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.Pengaturan
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,15 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.k1play.agentpro.agent.PermissionProfile
 import com.k1play.agentpro.agent.ToolApprovalPolicy
-import com.k1play.agentpro.service.overlay.Jendela mengambangLayanan
-import com.k1play.agentpro.ui.viewmodel.PengaturanViewModel
-import com.k1play.agentpro.wakeword.WakeWordLayanan
+import com.k1play.agentpro.service.overlay.FloatingOverlayService
+import com.k1play.agentpro.ui.viewmodel.SettingsViewModel
+import com.k1play.agentpro.wakeword.WakeWordService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PengaturanScreen(
+fun SettingsScreen(
     onBack: () -> Unit,
-    viewModel: PengaturanViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val permissionProfile by viewModel.permissionProfile.collectAsState()
     val activeProvider by viewModel.activeProvider.collectAsState()
@@ -55,7 +55,7 @@ fun PengaturanScreen(
                 title = { Text("Pengaturan") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Kembali")
                     }
                 }
             )
@@ -89,8 +89,8 @@ fun PengaturanScreen(
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
-                                    if (provider.hasKey) "API key configured"
-                                    else "No API key",
+                                    if (provider.hasKey) "Kunci API sudah diatur"
+                                    else "Belum ada kunci API",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = if (provider.hasKey)
                                         MaterialTheme.colorScheme.primary
@@ -101,7 +101,7 @@ fun PengaturanScreen(
                                 if (isActive) {
                                     Icon(
                                         Icons.Default.Check,
-                                        "Active",
+                                        "Aktif",
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.padding(end = 8.dp)
                                     )
@@ -121,7 +121,7 @@ fun PengaturanScreen(
                             ApiKeyInput(
                                 providerType = provider.type,
                                 hasKey = provider.hasKey,
-                                onSimpan = { key -> viewModel.saveApiKey(provider.type, key) },
+                                onSave = { key -> viewModel.saveApiKey(provider.type, key) },
                                 onRemove = { viewModel.removeApiKey(provider.type) }
                             )
                         }
