@@ -90,13 +90,13 @@ class AppAutomateTool @Inject constructor(
 ) : Tool {
     override val name = "app.automate"
     override val description = """General-purpose UI automation for the foreground Android app using the user's enabled AccessibilityService.
-Actions: tap by visible text/content description or screen coordinates; long_press by visible label or coordinates; type into the currently focused/identified editable field; swipe and scroll; back, home, recents; find_element.
+Actions: tap by visible text/content description or screen coordinates; long_press by visible label or coordinates; type into the focused/identified editable field; clear_text clears the identified editable field; swipe and scroll; back, home, recents; find_element. Prefer exact visible labels, perform one action at a time, and verify with screen.read after state changes.
 Workflow: call screen.read first, act on one step, wait/read again to verify, and use screen.capture + vision.analyze when charts, canvas, or visual controls are not exposed as accessible text.
 Works only where Android and the target app expose/allow the UI action. It does not bypass app security, login, CAPTCHA, biometrics, paywalls, or protected content. Sensitive actions still require the configured approval policy."""
     override val parameters = ToolParameters(
         properties = mapOf(
             "action" to ParameterProperty("string", "Action to perform",
-                enum = listOf("tap", "long_press", "type", "swipe", "scroll", "back", "home", "recents", "find_element")),
+                enum = listOf("tap", "long_press", "type", "clear_text", "swipe", "scroll", "back", "home", "recents", "find_element")),
             "text" to ParameterProperty("string", "Text to type, or text of element to tap/find"),
             "x" to ParameterProperty("integer", "X coordinate for tap"),
             "y" to ParameterProperty("integer", "Y coordinate for tap"),
