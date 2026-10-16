@@ -27,7 +27,7 @@ fun ApprovalScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pending Approvals") },
+                title = { Text("Menunggu Persetujuan") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
@@ -60,9 +60,9 @@ fun ApprovalScreen(
                 items(requests, key = { it.id }) { request ->
                     ApprovalCard(
                         request = request,
-                        onApprove = { viewModel.respond(request.id, ApprovalResult.APPROVED) },
-                        onDeny = { viewModel.respond(request.id, ApprovalResult.DENIED) },
-                        onAlwaysAllow = { viewModel.respond(request.id, ApprovalResult.ALWAYS_ALLOW) }
+                        onSetujui = { viewModel.respond(request.id, ApprovalResult.APPROVED) },
+                        onTolak = { viewModel.respond(request.id, ApprovalResult.DENIED) },
+                        onSelalu izinkanAllow = { viewModel.respond(request.id, ApprovalResult.ALWAYS_ALLOW) }
                     )
                 }
             }
@@ -73,9 +73,9 @@ fun ApprovalScreen(
 @Composable
 private fun ApprovalCard(
     request: ApprovalRequest,
-    onApprove: () -> Unit,
-    onDeny: () -> Unit,
-    onAlwaysAllow: () -> Unit
+    onSetujui: () -> Unit,
+    onTolak: () -> Unit,
+    onSelalu izinkanAllow: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -100,14 +100,14 @@ private fun ApprovalCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(onClick = onDeny, modifier = Modifier.weight(1f)) {
-                    Text("Deny")
+                OutlinedButton(onClick = onTolak, modifier = Modifier.weight(1f)) {
+                    Text("Tolak")
                 }
-                Button(onClick = onApprove, modifier = Modifier.weight(1f)) {
-                    Text("Approve")
+                Button(onClick = onSetujui, modifier = Modifier.weight(1f)) {
+                    Text("Setujui")
                 }
-                TextButton(onClick = onAlwaysAllow) {
-                    Text("Always")
+                TextButton(onClick = onSelalu izinkanAllow) {
+                    Text("Selalu izinkan")
                 }
             }
         }
