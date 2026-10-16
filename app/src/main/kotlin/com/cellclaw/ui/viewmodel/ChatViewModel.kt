@@ -11,6 +11,7 @@ import com.cellclaw.approval.ApprovalRequest
 import com.cellclaw.approval.ApprovalResult
 import com.cellclaw.config.AppConfig
 import com.cellclaw.config.SecureKeyStore
+import com.cellclaw.memory.ConversationStore
 import com.cellclaw.provider.AnthropicProvider
 import com.cellclaw.ui.screens.ChatMessage
 import com.cellclaw.voice.VoiceManager
@@ -54,6 +55,26 @@ class ChatViewModel @Inject constructor(
         observeVoiceInput()
         if (appConfig.voiceEnabled) {
             voiceManager.initialize()
+        }
+    }
+
+    private fun loadHistory() {
+        viewModelScope.launch {
+            val saved = runCatching { conversationStore.getAllMessages() }.getOrDefault(emptyList())
+            if (_messages.value.isEmpty() && saved.isNotEmpty()) {
+                _messages.value = saved.map { entity ->
+                    ChatMessage(id = entity.id, role = entity.role, content = entity.content)
+                }
+                messageCounter = saved.maxOfOrNull { it.id } ?: 0L
+            }
+        }
+    }
+
+    fun clearHistory() {
+        viewModelScope.launch {
+            runCatching { conversationStore.clearCurrentConversation() }
+            _messages.value = emptyList()
+            messageCounter = 0L
         }
     }
 
@@ -153,6 +174,9 @@ class ChatViewModel @Inject constructor(
             content = content,
             toolName = toolName
         )
+        viewModelScope.launch {
+            runCatching { conversationStore.addMessage(role, content) }
+        }
         // Auto-speak assistant responses if enabled
         if (role == "assistant" && appConfig.autoSpeakResponses) {
             voiceManager.speak(content)
