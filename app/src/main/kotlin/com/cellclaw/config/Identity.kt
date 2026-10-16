@@ -2,6 +2,7 @@ package com.cellclaw.config
 
 import com.cellclaw.memory.SemanticMemory
 import com.cellclaw.tools.ToolRegistry
+import com.cellclaw.skills.SkillRegistry
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,6 +25,9 @@ class Identity @Inject constructor(
                 appendLine("\n## Custom Instructions")
                 appendLine(personality)
             }
+
+            val skillsPrompt = skillRegistry.buildSkillsPrompt()
+            if (skillsPrompt.isNotBlank()) appendLine(skillsPrompt)
 
             appendLine("\n## Available Tools")
             for (tool in toolRegistry.all()) {
