@@ -6,7 +6,10 @@ Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan 
 
 ### Keamanan
 - Ubah kebijakan alat yang tidak dikenal agar meminta persetujuan, bukan otomatis dijalankan.
+- Profil izin awal diubah ke Hati-hati; operasi baca sensitif meminta persetujuan.
 - Operasi tulis, pengiriman, otomasi, eksekusi skrip/Termux, dan pengelolaan memori meminta persetujuan.
+- Hapus auto-enable Aksesibilitas dari tugas Gradle installDebug; instalasi tidak lagi mengubah pengaturan keamanan Android otomatis.
+- Nonaktifkan backup data aplikasi dan pindahkan API key Gemini dari query URL ke header.
 - Tambahkan ikon aplikasi robot bertopeng dengan palet gelap merah-hitam.
 - Catat status lisensi sebagai pekerjaan wajib karena repositori induk belum mencantumkan lisensi yang dapat diverifikasi.
 
