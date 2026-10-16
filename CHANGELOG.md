@@ -1,0 +1,24 @@
+# Changelog
+
+Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan belum merupakan rilis produksi.
+
+## [Unreleased] — 2026-10-17
+
+### Keamanan
+- Ubah kebijakan alat yang tidak dikenal agar meminta persetujuan, bukan otomatis dijalankan.
+- Operasi tulis, pengiriman, otomasi, eksekusi skrip/Termux, dan pengelolaan memori meminta persetujuan.
+- Tambahkan ikon aplikasi robot bertopeng dengan palet gelap merah-hitam.
+- Catat status lisensi sebagai pekerjaan wajib karena repositori induk belum mencantumkan lisensi yang dapat diverifikasi.
+
+### Perbaikan
+- Sinkronkan tes default model provider dengan konfigurasi provider yang benar-benar digunakan aplikasi.
+- Perbaiki tes kebijakan persetujuan yang sebelumnya mengharapkan perilaku berbeda dari implementasi.
+- Dokumentasi fitur, pemasangan, konfigurasi API key, privasi, batasan, dan build diperluas.
+
+### Catatan
+- APK GitHub Actions yang ditandatangani dengan debug key hanya untuk pengujian.
+- Latar belakang video anime pertarungan dan efek suara belum disertakan sebagai video produksi; perlu aset video/audio yang dibuat atau dilisensikan secara sah dan pengujian performa perangkat.
+- Tidak ada klaim bahwa seluruh bug telah dihilangkan atau keamanan telah tersertifikasi.
+
+## [0.1.0] — Build eksperimental sebelumnya
+- Chat AI, konfigurasi provider, memori lokal, riwayat percakapan, alat otomasi dengan izin, dan integrasi Termux.
