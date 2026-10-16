@@ -96,7 +96,11 @@
         <service
             android:name=".service.K1pL4yAgentProService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-started assistant tasks with a persistent notification." />
+        </service>
 
         <!-- Accessibility Service (separate process so it survives instrumentation restarts) -->
         <service
@@ -137,7 +141,11 @@
         <service
             android:name=".service.overlay.OverlayService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-enabled floating assistant overlay." />
+        </service>
 
         <!-- Notification Listener Service -->
         <service
