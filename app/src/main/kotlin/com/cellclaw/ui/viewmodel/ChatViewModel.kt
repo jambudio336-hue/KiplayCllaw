@@ -29,7 +29,8 @@ class ChatViewModel @Inject constructor(
     private val appConfig: AppConfig,
     private val secureKeyStore: SecureKeyStore,
     private val anthropicProvider: AnthropicProvider,
-    private val voiceManager: VoiceManager
+    private val voiceManager: VoiceManager,
+    private val conversationStore: ConversationStore
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
