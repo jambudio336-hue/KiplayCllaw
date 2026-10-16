@@ -36,13 +36,17 @@ class K1pL4yAgentProService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        acquireWakeLock()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_START -> {
-                startForeground(NOTIFICATION_ID, buildNotification("K1pL4yAgentPro is running", AgentState.IDLE, false, HeartbeatState.STOPPED, null))
+            // Android may restart a sticky service with a null intent after process reclaim.
+            ACTION_START, null -> {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification("K1pL4yAgentPro is running", AgentState.IDLE, false, HeartbeatState.STOPPED, null)
+                )
+                acquireWakeLock()
                 agentLoop.loadHistory()
                 observeState()
                 heartbeatManager.start(wakeLock)
@@ -52,14 +56,16 @@ class K1pL4yAgentProService : Service() {
                 agentLoop.stop()
                 serviceScope?.cancel()
                 serviceScope = null
+                releaseWakeLock()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
+                return START_NOT_STICKY
             }
-            ACTION_PAUSE -> {
-                agentLoop.pause()
-            }
-            ACTION_RESUME -> {
-                agentLoop.resume()
+            ACTION_PAUSE -> agentLoop.pause()
+            ACTION_RESUME -> agentLoop.resume()
+            else -> {
+                stopSelf()
+                return START_NOT_STICKY
             }
         }
         return START_STICKY
@@ -208,6 +214,7 @@ class K1pL4yAgentProService : Service() {
     }
 
     private fun acquireWakeLock() {
+        if (wakeLock?.isHeld == true) return
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
