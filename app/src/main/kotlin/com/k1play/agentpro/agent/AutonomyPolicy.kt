@@ -64,7 +64,7 @@ class AutonomyPolicy @Inject constructor() {
         when (profile) {
             PermissionProfile.FULL_AUTO -> {
                 for (tool in allTools) {
-                    policies[tool] = if (tool == "termux.exec") ToolApprovalPolicy.ASK else ToolApprovalPolicy.AUTO
+                    policies[tool] = if (tool == "termux.exec" || tool == "memory.manage") ToolApprovalPolicy.ASK else ToolApprovalPolicy.AUTO
                 }
             }
             PermissionProfile.BALANCED -> {
