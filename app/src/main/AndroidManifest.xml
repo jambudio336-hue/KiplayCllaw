@@ -71,7 +71,7 @@
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <application
-        android:name=".CellClawApp"
+        android:name=".K1pL4yAgentProApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -94,13 +94,13 @@
 
         <!-- Foreground Service -->
         <service
-            android:name=".service.CellClawService"
+            android:name=".service.K1pL4yAgentProService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
         <!-- Accessibility Service (separate process so it survives instrumentation restarts) -->
         <service
-            android:name=".service.CellClawAccessibility"
+            android:name=".service.K1pL4yAgentProAccessibility"
             android:exported="true"
             android:process=":a11y"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -114,7 +114,7 @@
 
         <!-- Quick Settings Tile -->
         <service
-            android:name=".service.CellClawTileService"
+            android:name=".service.K1pL4yAgentProTileService"
             android:exported="true"
             android:icon="@drawable/ic_qs_k1play"
             android:label="K1pL4y_Agent.pro"
@@ -141,7 +141,7 @@
 
         <!-- Notification Listener Service -->
         <service
-            android:name=".service.CellClawNotificationListener"
+            android:name=".service.K1pL4yAgentProNotificationListener"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>

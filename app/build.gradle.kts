@@ -15,7 +15,7 @@ rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use 
 }
 
 android {
-    namespace = "com.cellclaw"
+    namespace = "com.k1play.agentpro"
     compileSdk = 35
 
     defaultConfig {
@@ -24,7 +24,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
-        testInstrumentationRunner = "com.cellclaw.test.HiltTestRunner"
+        testInstrumentationRunner = "com.k1play.agentpro.test.HiltTestRunner"
 
         buildConfigField("String", "GEMINI_API_KEY",
             "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
@@ -68,7 +68,7 @@ tasks.register("enableAccessibility") {
         exec {
             commandLine(adb, "shell", "settings", "put", "secure",
                 "enabled_accessibility_services",
-                "com.k1play.agentpro/com.cellclaw.service.CellClawAccessibility")
+                "com.k1play.agentpro/com.k1play.agentpro.service.K1pL4yAgentProAccessibility")
         }
         exec {
             commandLine(adb, "shell", "settings", "put", "secure",

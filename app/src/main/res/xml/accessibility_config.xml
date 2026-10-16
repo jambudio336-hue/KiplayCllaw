@@ -8,4 +8,4 @@
     android:canTakeScreenshot="true"
     android:description="@string/app_name"
     android:notificationTimeout="100"
-    android:settingsActivity="com.cellclaw.ui.MainActivity" />
+    android:settingsActivity="com.k1play.agentpro.ui.MainActivity" />
