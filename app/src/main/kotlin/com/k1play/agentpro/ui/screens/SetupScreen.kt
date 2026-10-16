@@ -141,6 +141,7 @@ fun SetupScreen(
                                     "anthropic" -> "Anthropic API Key"
                                     "openai" -> "OpenAI API Key"
                                     "gemini" -> "Google AI API Key"
+                                    "openrouter" -> "OpenRouter API Key"
                                     else -> "API Key"
                                 }
                             )
@@ -165,6 +166,7 @@ fun SetupScreen(
                         "anthropic" -> "Starts with sk-ant-"
                         "openai" -> "Starts with sk-"
                         "gemini" -> "Starts with AIza"
+                        "openrouter" -> "Starts with sk-or-"
                         else -> ""
                     }
                     if (keyHint.isNotEmpty()) {
