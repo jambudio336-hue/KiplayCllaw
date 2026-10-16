@@ -50,6 +50,7 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
                     intent.getStringExtra("text")
                 )
                 "type" -> handleType(intent.getStringExtra("text") ?: "")
+                "clear_text" -> handleClearText()
                 "focus_message_input" -> focusMessageInput()
                 "swipe" -> handleSwipe(intent.getStringExtra("direction") ?: "right")
                 "scroll" -> handleScroll(intent.getStringExtra("direction") ?: "down")
@@ -175,17 +176,30 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
 
     private fun findNodeByLabel(root: AccessibilityNodeInfo, label: String): AccessibilityNodeInfo? {
         val needle = label.trim()
-        val nodeText = root.text?.toString().orEmpty()
-        val nodeDescription = root.contentDescription?.toString().orEmpty()
-        if (nodeText.equals(needle, ignoreCase = true) ||
-            nodeDescription.equals(needle, ignoreCase = true) ||
-            nodeText.contains(needle, ignoreCase = true) ||
-            nodeDescription.contains(needle, ignoreCase = true)
-        ) return root
+        if (needle.isEmpty()) return null
+        // Prefer exact visible matches across the whole tree before using a partial match.
+        // This reduces accidental taps on a similarly named control.
+        return findNodeByLabelRecursive(root, needle, exactOnly = true)
+            ?: findNodeByLabelRecursive(root, needle, exactOnly = false)
+    }
 
-        for (i in 0 until root.childCount) {
-            val child = root.getChild(i) ?: continue
-            val match = findNodeByLabel(child, label)
+    private fun findNodeByLabelRecursive(
+        node: AccessibilityNodeInfo,
+        needle: String,
+        exactOnly: Boolean
+    ): AccessibilityNodeInfo? {
+        val text = node.text?.toString().orEmpty()
+        val description = node.contentDescription?.toString().orEmpty()
+        val matches = if (exactOnly) {
+            text.equals(needle, ignoreCase = true) || description.equals(needle, ignoreCase = true)
+        } else {
+            text.contains(needle, ignoreCase = true) || description.contains(needle, ignoreCase = true)
+        }
+        if (matches && node.isVisibleToUser) return node
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            val match = findNodeByLabelRecursive(child, needle, exactOnly)
             if (match != null) return match
         }
         return null
@@ -248,6 +262,27 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
         val changed = target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
         return if (changed) successResult("type", "Text entered into the focused editable field")
         else errorResult("The current app did not accept text insertion; focus the intended input field and retry")
+    }
+
+    private fun handleClearText(): JsonObject {
+        val rootNode = rootInActiveWindow ?: return errorResult("No active window")
+        var inputNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+        if (inputNode == null || (!inputNode.isEditable &&
+                !inputNode.className?.toString().orEmpty().contains("EditText", ignoreCase = true))) {
+            inputNode = findEditableNode(rootNode)
+        }
+        val target = inputNode ?: return errorResult("No editable input field found on the current screen")
+        if (!target.isEditable && !target.className?.toString().orEmpty().contains("EditText", ignoreCase = true)) {
+            return errorResult("Focused element is not an editable text field")
+        }
+        val arguments = Bundle().apply {
+            putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "")
+        }
+        return if (target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)) {
+            successResult("clear_text", "Cleared the identified editable field")
+        } else {
+            errorResult("The current app did not allow clearing this text field")
+        }
     }
 
     private fun findEditableNode(node: AccessibilityNodeInfo, depth: Int = 0): AccessibilityNodeInfo? {
