@@ -67,6 +67,9 @@ interface MemoryFactDao {
     @Query("SELECT * FROM memory_facts ORDER BY updated_at DESC")
     suspend fun getAll(): List<MemoryFactEntity>
 
+    @Query("SELECT * FROM memory_facts WHERE `key` = :key LIMIT 1")
+    suspend fun getByKey(key: String): MemoryFactEntity?
+
     @Query("SELECT * FROM memory_facts WHERE `key` LIKE '%' || :query || '%' OR `value` LIKE '%' || :query || '%'")
     suspend fun search(query: String): List<MemoryFactEntity>
 
