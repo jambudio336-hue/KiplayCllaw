@@ -1,4 +1,10 @@
 ## Unreleased — General app automation improvements
+## Unreleased
+
+- Improved cross-app UI targeting by preferring exact visible labels before partial matches.
+- Added a `clear_text` action for identified editable fields to support safer form editing.
+- Strengthened agent execution guidance: checklist-based steps, screen verification, bounded safe retries, honest reporting, and confirmation before consequential external actions.
+
 - Expanded cross-app automation guidance: inspect foreground app, use accessibility labels or visual analysis, and verify state after each action.
 - Added a long-press accessibility action by visible label or screen coordinates.
 - Clarified that an existing signed-in session enables ordinary visible UI interaction only; it does not bypass authentication/security controls or authorize extraction of session tokens.
