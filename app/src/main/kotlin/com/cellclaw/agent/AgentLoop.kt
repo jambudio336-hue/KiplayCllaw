@@ -27,6 +27,7 @@ class AgentLoop @Inject constructor(
     private val conversationStore: ConversationStore,
     private val identity: Identity,
     private val autonomyPolicy: AutonomyPolicy,
+    private val selfImprovementMemory: SelfImprovementMemory,
     private val appConfig: AppConfig,
     private val heartbeatManagerProvider: Provider<HeartbeatManager>
 ) {
@@ -222,6 +223,11 @@ class AgentLoop @Inject constructor(
                 } else {
                     result.error ?: "Unknown error"
                 }
+                selfImprovementMemory.recordToolOutcome(
+                    toolName = call.name,
+                    success = result.success,
+                    error = result.error
+                )
 
                 toolResults.add(ContentBlock.ToolResult(
                     call.id, resultStr, isError = !result.success
