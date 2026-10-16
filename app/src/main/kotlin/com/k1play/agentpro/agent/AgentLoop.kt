@@ -316,21 +316,19 @@ class AgentLoop @Inject constructor(
 
     private suspend fun checkApproval(toolName: String, params: JsonObject): Boolean {
         val policy = autonomyPolicy.getPolicy(toolName)
-        return when (policy) {
-            ToolApprovalPolicy.AUTO -> true
-            ToolApprovalPolicy.DENY -> false
-            ToolApprovalPolicy.ASK -> {
-                _state.value = AgentState.WAITING_APPROVAL
-                val request = ApprovalRequest(
-                    toolName = toolName,
-                    parameters = params,
-                    description = "Allow $toolName?"
-                )
-                val result = approvalQueue.request(request)
-                _state.value = AgentState.EXECUTING_TOOLS
-                result == ApprovalResult.APPROVED
-            }
-        }
+        if (policy == ToolApprovalPolicy.DENY) return false
+        val toolRequiresApproval = toolRegistry.get(toolName)?.requiresApproval == true
+        if (policy == ToolApprovalPolicy.AUTO && !toolRequiresApproval) return true
+
+        _state.value = AgentState.WAITING_APPROVAL
+        val request = ApprovalRequest(
+            toolName = toolName,
+            parameters = params,
+            description = "Persetujuan diperlukan untuk $toolName."
+        )
+        val result = approvalQueue.request(request)
+        _state.value = AgentState.EXECUTING_TOOLS
+        return result == ApprovalResult.APPROVED
     }
 
     fun loadHistory() {
