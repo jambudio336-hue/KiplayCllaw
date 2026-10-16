@@ -9,8 +9,12 @@ import javax.inject.Singleton
 @Singleton
 class Identity @Inject constructor(
     private val appConfig: AppConfig,
-    private val semanticMemory: SemanticMemory
+    private val semanticMemory: SemanticMemory,
+    private val skillRegistry: SkillRegistry
 ) {
+    init {
+        skillRegistry.loadBundledSkills()
+    }
     fun buildSystemPrompt(toolRegistry: ToolRegistry): String {
         return buildString {
             appendLine(DEFAULT_IDENTITY)
