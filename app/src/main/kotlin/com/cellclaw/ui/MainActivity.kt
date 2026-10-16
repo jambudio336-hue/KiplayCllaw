@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cellclaw.config.AppConfig
 import com.cellclaw.provider.ProviderManager
-import com.cellclaw.service.K1pL4yAgentProService
+import com.cellclaw.service.CellClawService
 import com.cellclaw.service.overlay.OverlayService
 import com.cellclaw.ui.screens.*
 import com.cellclaw.ui.theme.K1pL4yAgentProTheme
@@ -105,8 +105,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startService() {
-        val intent = Intent(this, K1pL4yAgentProService::class.java).apply {
-            action = K1pL4yAgentProService.ACTION_START
+        val intent = Intent(this, CellClawService::class.java).apply {
+            action = CellClawService.ACTION_START
         }
         startForegroundService(intent)
     }
