@@ -48,7 +48,7 @@ class TermuxExecTool @Inject constructor(
         val callbackIntent = Intent(context, TermuxCommandResultReceiver::class.java)
             .putExtra(TermuxCommandResultReceiver.EXTRA_EXECUTION_ID, id)
         val pendingFlags = PendingIntent.FLAG_ONE_SHOT or
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0)
         val callback = PendingIntent.getBroadcast(context, id.hashCode(), callbackIntent, pendingFlags)
 
         val intent = Intent(ACTION_RUN_COMMAND).apply {
@@ -93,9 +93,10 @@ class TermuxExecTool @Inject constructor(
                 val stderr = obj.optString("stderr", "").take(MAX_OUTPUT_LENGTH)
                 val internalError = obj.optString("error", "")
                 if (internalError.isNotBlank()) ToolResult.error("Termux error: $internalError")
-                else ToolResult.success(buildJsonObject {
+                else if (exitCode != 0) ToolResult.error(
+                    "Termux command exited with code $exitCode. stdout: $stdout stderr: $stderr"
+                ) else ToolResult.success(buildJsonObject {
                     put("exit_code", exitCode)
-                    put("success", exitCode == 0)
                     put("stdout", stdout)
                     put("stderr", stderr)
                 })
