@@ -134,25 +134,55 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
     // ── Tap ──────────────────────────────────────────────────────────────
 
     private fun handleTap(x: Int, y: Int, text: String?): JsonObject {
-        if (text != null) {
+        if (!text.isNullOrBlank()) {
             val rootNode = rootInActiveWindow ?: return errorResult("No active window")
-            val nodes = rootNode.findAccessibilityNodeInfosByText(text)
-            if (nodes.isNullOrEmpty()) return errorResult("Element not found: '$text'")
-
-            val node = nodes.first()
-            // Try clicking the node directly, or find a clickable parent
-            val clickable = findClickableParent(node) ?: node
-            clickable.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-            return successResult("tap", "Tapped on '$text'")
+            val labels = text.split("|").map { it.trim() }.filter { it.isNotEmpty() }
+            for (label in labels) {
+                val node = findNodeByLabel(rootNode, label)
+                if (node != null) {
+                    val clickable = findClickableParent(node) ?: node
+                    if (clickable.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
+                        return successResult("tap", "Tapped matching UI element '$label'")
+                    }
+                }
+            }
+            return errorResult("No clickable UI element matched: '$text'. Screen labels may differ by app language.")
         }
 
-        // Tap at coordinates
+        if (x < 0 || y < 0 || x >= screenWidth || y >= screenHeight) {
+            return errorResult("Tap coordinates are outside the current screen")
+        }
         val path = Path().apply { moveTo(x.toFloat(), y.toFloat()) }
         val gesture = GestureDescription.Builder()
             .addStroke(GestureDescription.StrokeDescription(path, 0, 100))
             .build()
-        dispatchGesture(gesture, null, null)
-        return successResult("tap", "Tapped at ($x, $y)")
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                Log.d(TAG, "Coordinate tap completed")
+            }
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                Log.w(TAG, "Coordinate tap cancelled")
+            }
+        }, null)
+        return successResult("tap", "Coordinate tap dispatched at ($x, $y)")
+    }
+
+    private fun findNodeByLabel(root: AccessibilityNodeInfo, label: String): AccessibilityNodeInfo? {
+        val needle = label.trim()
+        val nodeText = root.text?.toString().orEmpty()
+        val nodeDescription = root.contentDescription?.toString().orEmpty()
+        if (nodeText.equals(needle, ignoreCase = true) ||
+            nodeDescription.equals(needle, ignoreCase = true) ||
+            nodeText.contains(needle, ignoreCase = true) ||
+            nodeDescription.contains(needle, ignoreCase = true)
+        ) return root
+
+        for (i in 0 until root.childCount) {
+            val child = root.getChild(i) ?: continue
+            val match = findNodeByLabel(child, label)
+            if (match != null) return match
+        }
+        return null
     }
 
     private fun findClickableParent(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
@@ -166,13 +196,33 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
     // ── Type ─────────────────────────────────────────────────────────────
 
     private fun handleType(text: String): JsonObject {
-        val focusedNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-            ?: return errorResult("No focused input field")
+        val rootNode = rootInActiveWindow ?: return errorResult("No active window")
+        var inputNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+        if (inputNode == null || (!inputNode.isEditable &&
+                !inputNode.className?.toString().orEmpty().contains("EditText", ignoreCase = true))) {
+            inputNode = findEditableNode(rootNode)
+        }
+        val target = inputNode ?: return errorResult("No editable input field found on the current screen")
+        target.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        target.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
         val arguments = Bundle().apply {
             putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
         }
-        focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
-        return successResult("type", "Typed '${text.take(50)}...'")
+        val changed = target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+        return if (changed) successResult("type", "Text entered into the focused editable field")
+        else errorResult("The current app did not accept text insertion; focus the intended input field and retry")
+    }
+
+    private fun findEditableNode(node: AccessibilityNodeInfo, depth: Int = 0): AccessibilityNodeInfo? {
+        if (depth > 20) return null
+        if (node.isEditable || node.className?.toString().orEmpty()
+                .contains("EditText", ignoreCase = true)) return node
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            val match = findEditableNode(child, depth + 1)
+            if (match != null) return match
+        }
+        return null
     }
 
     // ── Swipe (for dating apps, card swiping, etc.) ──────────────────────
