@@ -93,6 +93,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun clearHistory() {
+        agentLoop.clearCurrentConversationContext()
         viewModelScope.launch {
             runCatching { conversationStore.clearCurrentConversation() }
             _messages.value = emptyList()
