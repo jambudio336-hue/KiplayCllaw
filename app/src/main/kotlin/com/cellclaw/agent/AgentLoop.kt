@@ -120,7 +120,10 @@ class AgentLoop @Inject constructor(
             iterations++
 
             val request = CompletionRequest(
-                systemPrompt = identity.buildSystemPrompt(toolRegistry),
+                systemPrompt = listOf(
+                    identity.buildSystemPrompt(toolRegistry),
+                    selfImprovementMemory.systemPromptAddition()
+                ).filter { it.isNotBlank() }.joinToString("\n\n"),
                 messages = conversationHistory.toList(),
                 tools = toolRegistry.toApiSchema(),
                 maxTokens = 4096
