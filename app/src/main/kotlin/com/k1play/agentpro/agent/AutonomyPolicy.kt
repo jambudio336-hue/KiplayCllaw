@@ -5,16 +5,16 @@ import javax.inject.Singleton
 
 enum class PermissionProfile(val displayName: String, val description: String) {
     FULL_AUTO(
-        "Full Auto",
-        "All actions auto-approved. Zero interruptions."
+        "Otomatis untuk operasi aman",
+        "Operasi baca yang terdaftar berjalan otomatis; perubahan, pengiriman, dan eksekusi perintah meminta persetujuan."
     ),
     BALANCED(
-        "Balanced",
-        "Reads are automatic, writes and sends ask first."
+        "Seimbang",
+        "Operasi baca berjalan otomatis; tindakan lain meminta persetujuan."
     ),
     CAUTIOUS(
-        "Cautious",
-        "Only basic reads are automatic. Everything else asks."
+        "Hati-hati",
+        "Hanya pembacaan dasar yang berjalan otomatis; tindakan lain meminta persetujuan."
     )
 }
 
@@ -39,14 +39,9 @@ class AutonomyPolicy @Inject constructor() {
     private val readOps = setOf(
         "sms.read", "contacts.search", "calendar.query", "location.get",
         "clipboard.read", "file.read", "file.list", "settings.get",
-        "sensor.read", "phone.log", "notification.send", "notification.listen",
+        "sensor.read", "phone.log", "notification.listen",
         "browser.search", "browser.open", "screen.read", "screen.capture",
-        "vision.analyze", "messaging.read",
-        "heartbeat.context"
-    )
-
-    private val appControl = setOf(
-        "app.launch", "app.automate", "messaging.open"
+        "vision.analyze", "messaging.read", "heartbeat.context"
     )
 
     private val basicReads = setOf(
@@ -61,35 +56,24 @@ class AutonomyPolicy @Inject constructor() {
 
     fun applyProfile(profile: PermissionProfile) {
         policies.clear()
-        when (profile) {
-            PermissionProfile.FULL_AUTO -> {
-                for (tool in allTools) {
-                    policies[tool] = if (tool == "termux.exec" || tool == "memory.manage") ToolApprovalPolicy.ASK else ToolApprovalPolicy.AUTO
-                }
-            }
-            PermissionProfile.BALANCED -> {
-                for (tool in allTools) {
-                    policies[tool] = when {
-                        tool in readOps -> ToolApprovalPolicy.AUTO
-                        tool in appControl -> ToolApprovalPolicy.AUTO
-                        else -> ToolApprovalPolicy.ASK
-                    }
-                }
-            }
-            PermissionProfile.CAUTIOUS -> {
-                for (tool in allTools) {
-                    policies[tool] = when {
-                        tool in basicReads -> ToolApprovalPolicy.AUTO
-                        else -> ToolApprovalPolicy.ASK
-                    }
-                }
+        for (tool in allTools) {
+            policies[tool] = when (profile) {
+                PermissionProfile.FULL_AUTO ->
+                    if (tool in readOps && tool != "memory.manage") ToolApprovalPolicy.AUTO
+                    else ToolApprovalPolicy.ASK
+                PermissionProfile.BALANCED ->
+                    if (tool in readOps && tool != "memory.manage") ToolApprovalPolicy.AUTO
+                    else ToolApprovalPolicy.ASK
+                PermissionProfile.CAUTIOUS ->
+                    if (tool in basicReads) ToolApprovalPolicy.AUTO
+                    else ToolApprovalPolicy.ASK
             }
         }
     }
 
-    fun getPolicy(toolName: String): ToolApprovalPolicy {
-        return policies[toolName] ?: ToolApprovalPolicy.AUTO
-    }
+    /** Unknown or newly added tools must require approval until explicitly classified. */
+    fun getPolicy(toolName: String): ToolApprovalPolicy =
+        policies[toolName] ?: ToolApprovalPolicy.ASK
 
     fun setPolicy(toolName: String, policy: ToolApprovalPolicy) {
         policies[toolName] = policy
@@ -99,7 +83,7 @@ class AutonomyPolicy @Inject constructor() {
 }
 
 enum class ToolApprovalPolicy {
-    AUTO,  // Always allow
-    ASK,   // Prompt user
-    DENY   // Never allow
+    AUTO,
+    ASK,
+    DENY
 }
