@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CellClaw"
+rootProject.name = "K1pL4y_Agent.pro"
 include(":app")
