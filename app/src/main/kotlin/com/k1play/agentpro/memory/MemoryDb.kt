@@ -51,6 +51,9 @@ interface MessageDao {
 
     @Query("SELECT COUNT(*) FROM messages WHERE conversation_id = :conversationId")
     suspend fun count(conversationId: String = "default"): Int
+
+    @Query("SELECT conversation_id FROM messages GROUP BY conversation_id ORDER BY MAX(timestamp) DESC")
+    suspend fun getConversationIds(): List<String>
 }
 
 @Dao
