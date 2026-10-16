@@ -18,6 +18,7 @@ import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.content.ContextCompat
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileOutputStream
@@ -92,13 +93,14 @@ class K1pL4yAgentProAccessibility : AccessibilityService() {
         updateScreenDimensions()
 
         val filter = IntentFilter(ACTION_COMMAND)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // RECEIVER_EXPORTED so broadcasts from the test process (different PID) can reach us.
-            // Safety: we only act on intents with our specific action + setPackage.
-            registerReceiver(actionReceiver, filter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(actionReceiver, filter)
-        }
+        // This command receiver is private to this app. NOT_EXPORTED still allows
+        // same-UID instrumentation processes while blocking broadcasts from other apps.
+        ContextCompat.registerReceiver(
+            this,
+            actionReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         AccessibilityBridge.onServiceConnected()
         Log.d(TAG, "Accessibility service connected (${screenWidth}x${screenHeight})")
