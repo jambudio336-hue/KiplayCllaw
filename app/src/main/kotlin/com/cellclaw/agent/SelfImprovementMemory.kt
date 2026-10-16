@@ -43,10 +43,11 @@ class SelfImprovementMemory @Inject constructor(
             trimmed.put(current.getJSONObject(index))
         }
 
+        val key = "tool_${safeName}_${if (success) "ok" else "fail"}"
+        val nextCount = prefs.getInt(key, 0) + 1
         prefs.edit {
             putString(KEY_EVENTS, trimmed.toString())
-            val key = "tool_${safeName}_${if (success) "ok" else "fail"}"
-            putInt(key, getInt(key, 0) + 1)
+            putInt(key, nextCount)
         }
     }
 
