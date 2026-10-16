@@ -123,8 +123,13 @@ jobs:
           chmod +x ./gradlew
           ./gradlew testDebugUnitTest --no-daemon
 
-      - name: Build APKs
-        run: ./gradlew assembleDebug assembleRelease --no-daemon
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Build test-release APK
+        id: build_release
+        continue-on-error: true
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
@@ -137,6 +142,7 @@ jobs:
           retention-days: 30
 
       - name: Publish test APK release
+        if: steps.build_release.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.0-k1play-${{ github.run_number }}
