@@ -27,11 +27,13 @@ android {
         testInstrumentationRunner = "com.cellclaw.test.HiltTestRunner"
 
         buildConfigField("String", "GEMINI_API_KEY",
-            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
+            "\"\${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
     }
 
     buildTypes {
         release {
+            // Temporary installable test build. Do not publish this debug-key-signed APK.
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -83,11 +85,9 @@ tasks.whenTaskAdded {
 }
 
 dependencies {
-    // Kotlin
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
 
-    // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
@@ -97,50 +97,33 @@ dependencies {
     implementation(libs.activity.compose)
     debugImplementation(libs.compose.ui.tooling)
 
-    // Lifecycle
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
-
-    // Navigation
     implementation(libs.navigation.compose)
 
-    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
-    // Network
     implementation(libs.okhttp)
     implementation(libs.okhttp.sse)
 
-    // Biometric
     implementation(libs.biometric)
-
-    // WorkManager
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
     ksp(libs.hilt.work.compiler)
 
-    // Camera
     implementation(libs.camera.core)
     implementation(libs.camera.camera2)
     implementation(libs.camera.lifecycle)
-
-    // Location
     implementation(libs.location)
-
-    // TensorFlow Lite
     implementation(libs.tensorflow.lite)
-
-    // AndroidX Core
     implementation(libs.core.ktx)
 
-    // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.0")
