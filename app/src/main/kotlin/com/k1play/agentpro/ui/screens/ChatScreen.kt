@@ -63,10 +63,10 @@ fun ChatScreen(
     }
     var inputText by remember { mutableStateOf("") }
     var showHistoryDialog by remember { mutableStateOf(false) }
-    val clipboard = context.getSystemService(ClipboardManager::class.java)
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val clipboard = context.getSystemService(ClipboardManager::class.java)
 
     // Poll accessibility service status via system API (works cross-process)
     var accessibilityConnected by remember { mutableStateOf(false) }
@@ -518,11 +518,22 @@ fun ChatBubble(message: ChatMessage, onCopy: () -> Unit = {}) {
                 }
                 Spacer(Modifier.height(4.dp))
             }
-            Text(
-                text = message.content,
-                color = textColor,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    text = message.content,
+                    color = textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = onCopy, modifier = Modifier.size(28.dp)) {
+                    Icon(
+                        Icons.Default.ContentCopy,
+                        contentDescription = "Salin pesan",
+                        modifier = Modifier.size(15.dp),
+                        tint = textColor.copy(alpha = 0.75f)
+                    )
+                }
+            }
         }
     }
 }
