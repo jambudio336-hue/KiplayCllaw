@@ -2,7 +2,7 @@ package com.cellclaw.ui.screens
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.Settings
+import android.provider.Pengaturan
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,15 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cellclaw.agent.PermissionProfile
 import com.cellclaw.agent.ToolApprovalPolicy
-import com.cellclaw.service.overlay.OverlayService
-import com.cellclaw.ui.viewmodel.SettingsViewModel
-import com.cellclaw.wakeword.WakeWordService
+import com.cellclaw.service.overlay.Jendela mengambangLayanan
+import com.cellclaw.ui.viewmodel.PengaturanViewModel
+import com.cellclaw.wakeword.WakeWordLayanan
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
+fun PengaturanScreen(
     onBack: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: PengaturanViewModel = hiltViewModel()
 ) {
     val permissionProfile by viewModel.permissionProfile.collectAsState()
     val activeProvider by viewModel.activeProvider.collectAsState()
@@ -52,7 +52,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text("Pengaturan") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
@@ -70,7 +70,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Provider section
-            Text("AI Provider", style = MaterialTheme.typography.titleMedium)
+            Text("Penyedia AI", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     for (provider in providers) {
@@ -121,7 +121,7 @@ fun SettingsScreen(
                             ApiKeyInput(
                                 providerType = provider.type,
                                 hasKey = provider.hasKey,
-                                onSave = { key -> viewModel.saveApiKey(provider.type, key) },
+                                onSimpan = { key -> viewModel.saveApiKey(provider.type, key) },
                                 onRemove = { viewModel.removeApiKey(provider.type) }
                             )
                         }
@@ -171,46 +171,46 @@ fun SettingsScreen(
                         OutlinedTextField(
                             value = modelInput,
                             onValueChange = { modelInput = it },
-                            label = { Text("Model name") },
+                            label = { Text("Nama model") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
                         if (modelInput != model) {
                             TextButton(onClick = { viewModel.setModel(modelInput) }) {
-                                Text("Save")
+                                Text("Simpan")
                             }
                         }
                     }
                 }
             }
 
-            // User section
-            Text("User", style = MaterialTheme.typography.titleMedium)
+            // Pengguna section
+            Text("Pengguna", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     var nameInput by remember { mutableStateOf(userName) }
                     OutlinedTextField(
                         value = nameInput,
                         onValueChange = { nameInput = it },
-                        label = { Text("Your Name") },
+                        label = { Text("Nama Anda") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
                     if (nameInput != userName) {
-                        TextButton(onClick = { viewModel.setUserName(nameInput) }) {
-                            Text("Save")
+                        TextButton(onClick = { viewModel.setPenggunaName(nameInput) }) {
+                            Text("Simpan")
                         }
                     }
                 }
             }
 
-            // Agent section
-            Text("Agent", style = MaterialTheme.typography.titleMedium)
+            // Agen section
+            Text("Agen", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     var iterInput by remember { mutableStateOf(if (maxIterations == 0) "" else maxIterations.toString()) }
                     Column {
-                        Text("Max iterations", style = MaterialTheme.typography.bodyMedium)
+                        Text("Maksimal iterasi", style = MaterialTheme.typography.bodyMedium)
                         Text(
                             "Limit how many turns the agent can take. Leave empty for unlimited.",
                             style = MaterialTheme.typography.bodySmall,
@@ -227,30 +227,30 @@ fun SettingsScreen(
                             onValueChange = { value ->
                                 iterInput = value.filter { it.isDigit() }
                             },
-                            label = { Text("Max iterations") },
-                            placeholder = { Text("Unlimited") },
+                            label = { Text("Maksimal iterasi") },
+                            placeholder = { Text("Tanpa batas") },
                             modifier = Modifier.weight(1f),
                             singleLine = true
                         )
                         val parsed = iterInput.toIntOrNull() ?: 0
                         if (parsed != maxIterations) {
                             TextButton(onClick = { viewModel.setMaxIterations(parsed) }) {
-                                Text("Save")
+                                Text("Simpan")
                             }
                         }
                     }
                 }
             }
 
-            // Service section
-            Text("Service", style = MaterialTheme.typography.titleMedium)
+            // Layanan section
+            Text("Layanan", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Start on boot")
+                        Text("Mulai saat perangkat menyala")
                         Switch(
                             checked = autoStartOnBoot,
                             onCheckedChange = { viewModel.setAutoStartOnBoot(it) }
@@ -259,8 +259,8 @@ fun SettingsScreen(
                 }
             }
 
-            // Overlay section
-            Text("Overlay", style = MaterialTheme.typography.titleMedium)
+            // Jendela mengambang section
+            Text("Jendela mengambang", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -269,7 +269,7 @@ fun SettingsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Floating overlay")
+                            Text("Jendela mengambang")
                             Text(
                                 "Draggable bubble for quick actions over other apps",
                                 style = MaterialTheme.typography.bodySmall,
@@ -279,30 +279,30 @@ fun SettingsScreen(
                         Switch(
                             checked = overlayEnabled,
                             onCheckedChange = { enabled ->
-                                if (enabled && !Settings.canDrawOverlays(context)) {
+                                if (enabled && !Pengaturan.canDrawJendela mengambangs(context)) {
                                     val intent = Intent(
-                                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        Pengaturan.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:${context.packageName}")
                                     )
                                     context.startActivity(intent)
                                 } else {
-                                    viewModel.setOverlayEnabled(enabled)
+                                    viewModel.setJendela mengambangEnabled(enabled)
                                     if (enabled) {
-                                        context.startForegroundService(
-                                            Intent(context, OverlayService::class.java)
+                                        context.startForegroundLayanan(
+                                            Intent(context, Jendela mengambangLayanan::class.java)
                                         )
                                     } else {
-                                        context.stopService(
-                                            Intent(context, OverlayService::class.java)
+                                        context.stopLayanan(
+                                            Intent(context, Jendela mengambangLayanan::class.java)
                                         )
                                     }
                                 }
                             }
                         )
                     }
-                    if (overlayEnabled && !Settings.canDrawOverlays(context)) {
+                    if (overlayEnabled && !Pengaturan.canDrawJendela mengambangs(context)) {
                         Text(
-                            "Overlay permission required. Tap the toggle to grant.",
+                            "Jendela mengambang permission required. Tap the toggle to grant.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -310,18 +310,18 @@ fun SettingsScreen(
                 }
             }
 
-            // Voice section
-            Text("Voice", style = MaterialTheme.typography.titleMedium)
+            // Suara section
+            Text("Suara", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Enable voice input")
+                        Text("Aktifkan input suara")
                         Switch(
                             checked = voiceEnabled,
-                            onCheckedChange = { viewModel.setVoiceEnabled(it) }
+                            onCheckedChange = { viewModel.setSuaraEnabled(it) }
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -329,7 +329,7 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Auto-speak responses")
+                        Text("Bacakan jawaban otomatis")
                         Switch(
                             checked = autoSpeakResponses,
                             onCheckedChange = { viewModel.setAutoSpeakResponses(it) }
@@ -338,8 +338,8 @@ fun SettingsScreen(
                 }
             }
 
-            // Wake Word section
-            Text("Wake Word", style = MaterialTheme.typography.titleMedium)
+            // Kata pemicu suara section
+            Text("Kata pemicu suara", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -348,7 +348,7 @@ fun SettingsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Enable wake word")
+                            Text("Aktifkan kata pemicu")
                             Text(
                                 "Say \"CellClaw\" to activate voice commands",
                                 style = MaterialTheme.typography.bodySmall,
@@ -360,15 +360,15 @@ fun SettingsScreen(
                             onCheckedChange = { enabled ->
                                 viewModel.setWakeWordEnabled(enabled)
                                 if (enabled) {
-                                    context.startForegroundService(
-                                        Intent(context, WakeWordService::class.java).apply {
-                                            action = WakeWordService.ACTION_START
+                                    context.startForegroundLayanan(
+                                        Intent(context, WakeWordLayanan::class.java).apply {
+                                            action = WakeWordLayanan.ACTION_START
                                         }
                                     )
                                 } else {
-                                    context.startService(
-                                        Intent(context, WakeWordService::class.java).apply {
-                                            action = WakeWordService.ACTION_STOP
+                                    context.startLayanan(
+                                        Intent(context, WakeWordLayanan::class.java).apply {
+                                            action = WakeWordLayanan.ACTION_STOP
                                         }
                                     )
                                 }
@@ -387,7 +387,7 @@ fun SettingsScreen(
             }
 
             // Permission profile
-            Text("Permission Profile", style = MaterialTheme.typography.titleMedium)
+            Text("Profil izin", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     for (profile in PermissionProfile.entries) {
@@ -420,7 +420,7 @@ fun SettingsScreen(
             }
 
             // Approval policies
-            Text("Tool Approval Policies", style = MaterialTheme.typography.titleMedium)
+            Text("Kebijakan persetujuan alat", style = MaterialTheme.typography.titleMedium)
             Text(
                 "Fine-tune individual tools. Switching profiles above resets these.",
                 style = MaterialTheme.typography.bodySmall,
@@ -456,7 +456,7 @@ fun SettingsScreen(
 private fun ApiKeyInput(
     providerType: String,
     hasKey: Boolean,
-    onSave: (String) -> Unit,
+    onSimpan: (String) -> Unit,
     onRemove: () -> Unit
 ) {
     var newKey by remember { mutableStateOf("") }
@@ -471,7 +471,7 @@ private fun ApiKeyInput(
             OutlinedTextField(
                 value = newKey,
                 onValueChange = { newKey = it },
-                label = { Text("API Key") },
+                label = { Text("Kunci API") },
                 leadingIcon = { Icon(Icons.Default.Key, null) },
                 trailingIcon = {
                     IconButton(onClick = { showKey = !showKey }) {
@@ -489,11 +489,11 @@ private fun ApiKeyInput(
             )
             if (newKey.length >= 10) {
                 IconButton(onClick = {
-                    onSave(newKey)
+                    onSimpan(newKey)
                     newKey = ""
                     editing = false
                 }) {
-                    Icon(Icons.Default.Check, "Save", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Default.Check, "Simpan", tint = MaterialTheme.colorScheme.primary)
                 }
             }
         }
@@ -503,7 +503,7 @@ private fun ApiKeyInput(
             horizontalArrangement = Arrangement.End
         ) {
             TextButton(onClick = { editing = true }) {
-                Text("Change Key")
+                Text("Ubah kunci")
             }
             IconButton(onClick = onRemove) {
                 Icon(Icons.Default.Delete, "Remove", tint = MaterialTheme.colorScheme.error)
