@@ -41,5 +41,9 @@ class ConversationStore @Inject constructor(
         currentConversationId = id
     }
 
+    fun selectConversation(id: String) {
+        currentConversationId = id
+    }
+
     fun currentId(): String = currentConversationId
 }
