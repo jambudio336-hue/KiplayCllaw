@@ -48,7 +48,7 @@ fun SetupScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Welcome to CellClaw") })
+            TopAppBar(title = { Text("Selamat datang di K1pL4y_Agent.pro") })
         }
     ) { padding ->
         Column(
@@ -183,7 +183,7 @@ fun SetupScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = apiKey.length >= 10
                     ) {
-                        Text("Continue")
+                        Text("Lanjutkan")
                     }
                 }
 
@@ -200,7 +200,7 @@ fun SetupScreen(
                     OutlinedTextField(
                         value = userName,
                         onValueChange = { userName = it },
-                        label = { Text("Your name") },
+                        label = { Text("Nama Anda") },
                         leadingIcon = { Icon(Icons.Default.Person, null) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
@@ -213,14 +213,14 @@ fun SetupScreen(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Continue")
+                        Text("Lanjutkan")
                     }
 
                     TextButton(
                         onClick = { currentStep = 2 },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Skip")
+                        Text("Lewati")
                     }
                 }
 
@@ -291,7 +291,7 @@ fun SetupScreen(
                         onClick = { currentStep = 3 },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Continue")
+                        Text("Lanjutkan")
                     }
                 }
 
@@ -300,21 +300,21 @@ fun SetupScreen(
                     val lifecycleOwner = LocalLifecycleOwner.current
 
                     // Re-check permissions when user returns from settings
-                    var overlayGranted by remember {
+                    var overlayDiizinkan by remember {
                         mutableStateOf(Settings.canDrawOverlays(context))
                     }
-                    var accessibilityGranted by remember {
+                    var accessibilityDiizinkan by remember {
                         mutableStateOf(isAccessibilityEnabled(context))
                     }
-                    var notifListenerGranted by remember {
+                    var notifListenerDiizinkan by remember {
                         mutableStateOf(isNotificationListenerEnabled(context))
                     }
                     DisposableEffect(lifecycleOwner) {
                         val observer = LifecycleEventObserver { _, event ->
                             if (event == Lifecycle.Event.ON_RESUME) {
-                                overlayGranted = Settings.canDrawOverlays(context)
-                                accessibilityGranted = isAccessibilityEnabled(context)
-                                notifListenerGranted = isNotificationListenerEnabled(context)
+                                overlayDiizinkan = Settings.canDrawOverlays(context)
+                                accessibilityDiizinkan = isAccessibilityEnabled(context)
+                                notifListenerDiizinkan = isNotificationListenerEnabled(context)
                             }
                         }
                         lifecycleOwner.lifecycle.addObserver(observer)
@@ -334,9 +334,9 @@ fun SetupScreen(
 
                     // Overlay permission
                     PermissionRow(
-                        title = "Display over other apps",
+                        title = "Tampilkan di atas aplikasi lain",
                         description = "Required for the floating bubble overlay",
-                        granted = overlayGranted,
+                        granted = overlayDiizinkan,
                         onClick = {
                             val intent = Intent(
                                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -350,19 +350,19 @@ fun SetupScreen(
 
                     // Accessibility permission
                     PermissionRow(
-                        title = "Accessibility service",
+                        title = "Layanan aksesibilitas",
                         description = "Required for screen reading and app automation",
-                        granted = accessibilityGranted,
+                        granted = accessibilityDiizinkan,
                         onClick = { openAccessibilitySettings(context) }
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Notification listener
+                    // Pembaca notifikasi
                     PermissionRow(
-                        title = "Notification listener",
+                        title = "Pembaca notifikasi",
                         description = "Required to read and act on notifications",
-                        granted = notifListenerGranted,
+                        granted = notifListenerDiizinkan,
                         onClick = {
                             context.startActivity(
                                 Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
@@ -373,19 +373,19 @@ fun SetupScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    val allGranted = overlayGranted && accessibilityGranted && notifListenerGranted
+                    val allDiizinkan = overlayDiizinkan && accessibilityDiizinkan && notifListenerDiizinkan
 
                     Button(
                         onClick = onComplete,
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = allGranted
+                        enabled = allDiizinkan
                     ) {
-                        Text("Start CellClaw")
+                        Text("Mulai K1pL4y_Agent.pro")
                     }
 
-                    if (!allGranted) {
+                    if (!allDiizinkan) {
                         Text(
-                            "Grant all permissions above to continue",
+                            "Izinkan all permissions above to continue",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 4.dp)
@@ -432,11 +432,11 @@ private fun PermissionRow(
             if (granted) {
                 Icon(
                     Icons.Default.Check,
-                    contentDescription = "Granted",
+                    contentDescription = "Diizinkan",
                     tint = MaterialTheme.colorScheme.primary
                 )
             } else {
-                TextButton(onClick = onClick) { Text("Grant") }
+                TextButton(onClick = onClick) { Text("Izinkan") }
             }
         }
     }
