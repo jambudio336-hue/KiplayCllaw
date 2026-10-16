@@ -93,6 +93,7 @@ object AppModule {
         messagingOpen: MessagingOpenTool,
         messagingRead: MessagingReadTool,
         messagingReply: MessagingReplyTool,
+        deviceInfo: DeviceInfoTool,
         heartbeatContext: HeartbeatContextTool,
         memoryManage: MemoryManageTool
     ): ToolRegistry {
@@ -117,6 +118,7 @@ object AppModule {
                 notificationListen,
                 schedulerTool,
                 messagingOpen, messagingRead, messagingReply,
+                deviceInfo,
                 heartbeatContext,
                 memoryManage
             )
