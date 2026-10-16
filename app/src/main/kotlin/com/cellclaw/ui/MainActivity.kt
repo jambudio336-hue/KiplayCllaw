@@ -15,10 +15,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cellclaw.config.AppConfig
 import com.cellclaw.provider.ProviderManager
-import com.cellclaw.service.CellClawService
+import com.cellclaw.service.K1pL4yAgentProService
 import com.cellclaw.service.overlay.OverlayService
 import com.cellclaw.ui.screens.*
-import com.cellclaw.ui.theme.CellClawTheme
+import com.cellclaw.ui.theme.K1pL4yAgentProTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
         val pendingMessage = intent?.getStringExtra("message")
 
         setContent {
-            CellClawTheme {
+            K1pL4yAgentProTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -105,8 +105,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startService() {
-        val intent = Intent(this, CellClawService::class.java).apply {
-            action = CellClawService.ACTION_START
+        val intent = Intent(this, K1pL4yAgentProService::class.java).apply {
+            action = K1pL4yAgentProService.ACTION_START
         }
         startForegroundService(intent)
     }
