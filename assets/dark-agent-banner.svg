@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">K1pL4y Agent — Dark Masked Sentinel</title>
+  <desc id="desc">A dark robot wearing a pale mask, with red neon eyes and animated sword-like light trails.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08060a"/><stop offset=".55" stop-color="#1a0710"/><stop offset="1" stop-color="#090609"/>
+    </linearGradient>
+    <linearGradient id="mask" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2edf0"/><stop offset="1" stop-color="#aaa1a8"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#8f243a" stroke-opacity=".17" stroke-width="1"/></pattern>
+  </defs>
+  <rect width="1200" height="360" rx="22" fill="url(#bg)"/>
+  <rect width="1200" height="360" rx="22" fill="url(#grid)"/>
+  <g opacity=".22" stroke="#fb2347" stroke-width="2"><path d="M0 286H1200"/><path d="M0 298H1200"/><path d="M0 310H1200"/></g>
+  <g transform="translate(86 34)">
+    <path d="M110 15L145 2L177 15L202 48L206 101L193 149L165 177L122 186L80 177L52 149L39 101L43 48L68 15Z" fill="#22141d" stroke="#7e1a32" stroke-width="4"/>
+    <path d="M66 44Q120 7 179 44L180 112Q171 158 122 163Q73 158 64 112Z" fill="url(#mask)" stroke="#ff2347" stroke-width="2"/>
+    <path d="M72 70L106 62L101 88L73 94Z M138 62L172 70L171 94L143 88Z" fill="#15090f"/>
+    <path d="M76 75L99 71L96 81L77 85Z M145 71L168 75L167 85L148 81Z" fill="#ff2347" filter="url(#glow)"/>
+    <path d="M111 103L133 103L122 121Z" fill="#6b5d65"/>
+    <path d="M100 134L144 134L136 143L108 143Z" fill="#171017"/>
+    <path d="M44 69L18 48L27 88L43 101 M200 69L226 48L217 88L201 101" fill="#2c1722" stroke="#ff2347" stroke-width="3"/>
+    <path d="M102 7L122 -10L142 7L136 21L108 21Z" fill="#35101c" stroke="#ff2347" stroke-width="2"/>
+  </g>
+  <g fill="none" stroke="#ff2347" stroke-linecap="round" filter="url(#glow)">
+    <path d="M360 54L548 244" stroke-width="5"><animate attributeName="opacity" values=".25;1;.25" dur="2.2s" repeatCount="indefinite"/></path>
+    <path d="M548 54L360 244" stroke-width="3"><animate attributeName="opacity" values="1;.2;1" dur="1.7s" repeatCount="indefinite"/></path>
+    <path d="M335 150L570 150" stroke-width="2" stroke-dasharray="14 18"><animate attributeName="stroke-dashoffset" from="0" to="-128" dur="2s" repeatCount="indefinite"/></path>
+  </g>
+  <g font-family="monospace">
+    <text x="620" y="130" fill="#ff2347" font-size="19" letter-spacing="8">AUTONOMOUS INTELLIGENCE</text>
+    <text x="615" y="190" fill="#f4edf1" font-size="51" font-weight="800" letter-spacing="2">K1pL4y_Agent.pro</text>
+    <text x="620" y="230" fill="#b6a5ae" font-size="18" letter-spacing="3">DARK MODE · HUMAN APPROVAL · ANDROID</text>
+    <path d="M620 257H1080" stroke="#7c1730" stroke-width="2"/>
+    <text x="620" y="292" fill="#ff6b83" font-size="15" letter-spacing="4">THINK DEEP. ACT WITH PERMISSION.</text>
+  </g>
+  <g fill="#ff2347"><circle cx="1120" cy="55" r="3"><animate attributeName="opacity" values=".2;1;.2" dur="1.2s" repeatCount="indefinite"/></circle><circle cx="1090" cy="77" r="2"/><circle cx="1152" cy="94" r="2"/></g>
+</svg>
