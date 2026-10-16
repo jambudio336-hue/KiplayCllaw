@@ -5,7 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Tambah
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,29 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cellclaw.skills.Skill
-import com.cellclaw.ui.viewmodel.SkillsViewModel
+import com.cellclaw.ui.viewmodel.KeahlianViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SkillsScreen(
+fun KeahlianScreen(
     onBack: () -> Unit,
-    viewModel: SkillsViewModel = hiltViewModel()
+    viewModel: KeahlianViewModel = hiltViewModel()
 ) {
     val skills by viewModel.skills.collectAsState()
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showTambahDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Skills") },
+                title = { Text("Keahlian") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showAddDialog = true }) {
-                        Icon(Icons.Default.Add, "Add Skill")
+                    IconButton(onClick = { showTambahDialog = true }) {
+                        Icon(Icons.Default.Tambah, "Tambah Skill")
                     }
                 }
             )
@@ -56,7 +56,7 @@ fun SkillsScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Skills are reusable workflows the AI can follow.",
+                        "Keahlian are reusable workflows the AI can follow.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -80,12 +80,12 @@ fun SkillsScreen(
         }
     }
 
-    if (showAddDialog) {
-        AddSkillDialog(
-            onDismiss = { showAddDialog = false },
-            onAdd = { name, description, trigger, steps ->
+    if (showTambahDialog) {
+        TambahSkillDialog(
+            onDismiss = { showTambahDialog = false },
+            onTambah = { name, description, trigger, steps ->
                 viewModel.addSkill(name, description, trigger, steps)
-                showAddDialog = false
+                showTambahDialog = false
             }
         )
     }
@@ -124,9 +124,9 @@ private fun SkillCard(skill: Skill, onDelete: () -> Unit) {
 }
 
 @Composable
-private fun AddSkillDialog(
+private fun TambahSkillDialog(
     onDismiss: () -> Unit,
-    onAdd: (name: String, description: String, trigger: String, steps: String) -> Unit
+    onTambah: (name: String, description: String, trigger: String, steps: String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -135,33 +135,33 @@ private fun AddSkillDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New Skill") },
+        title = { Text("Keahlian Baru") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text("Nama") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text("Deskripsi") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = trigger,
                     onValueChange = { trigger = it },
-                    label = { Text("Trigger phrase") },
+                    label = { Text("Frasa pemicu") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = steps,
                     onValueChange = { steps = it },
-                    label = { Text("Steps (one per line)") },
+                    label = { Text("Langkah (satu per baris)") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3
                 )
@@ -169,14 +169,14 @@ private fun AddSkillDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onAdd(name, description, trigger, steps) },
+                onClick = { onTambah(name, description, trigger, steps) },
                 enabled = name.isNotBlank()
             ) {
-                Text("Add")
+                Text("Tambah")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Batal") }
         }
     )
 }
