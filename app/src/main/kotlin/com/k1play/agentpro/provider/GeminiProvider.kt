@@ -59,7 +59,7 @@ class GeminiProvider @Inject constructor() : Provider {
 
             var lastError: String? = null
             for (tryModel in modelsToTry) {
-                val url = "$API_URL/$tryModel:generateContent?key=$apiKey"
+                val url = "$API_URL/$tryModel:generateContent"
 
                 // Retry up to 3 times for transient network errors (DNS, connection reset, etc.)
                 var response: okhttp3.Response? = null
@@ -71,6 +71,7 @@ class GeminiProvider @Inject constructor() : Provider {
                         val httpRequest = Request.Builder()
                             .url(url)
                             .addHeader("Content-Type", "application/json")
+                            .addHeader("x-goog-api-key", apiKey)
                             .post(body.toRequestBody("application/json".toMediaType()))
                             .build()
 
@@ -99,7 +100,7 @@ class GeminiProvider @Inject constructor() : Provider {
                     if (tryModel != model) {
                         Log.w(TAG, "Model $model unavailable, fell back to $tryModel (not locking in — may be temporary rate limit)")
                     }
-                    Log.d(TAG, "Raw response (truncated): ${respBody.take(6000)}")
+                    Log.d(TAG, "Gemini response received for $tryModel (${respBody.length} chars)")
                     return@withContext parseResponse(json.parseToJsonElement(respBody).jsonObject)
                 }
 
@@ -112,8 +113,8 @@ class GeminiProvider @Inject constructor() : Provider {
                 }
 
                 // Other errors (401, 500, etc.) — don't fallback, throw immediately
-                Log.e(TAG, "Gemini API error ${resp.code}: ${respBody.take(2000)}")
-                throw ProviderException("Gemini API error ${resp.code}: $respBody")
+                Log.e(TAG, "Gemini API error status: ${resp.code}")
+                throw ProviderException("Gemini API request failed with status ${resp.code}")
             }
 
             throw ProviderException("All models unavailable. Last error: $lastError")
