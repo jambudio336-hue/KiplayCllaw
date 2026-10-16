@@ -27,7 +27,7 @@ object AppModule {
         return Room.databaseBuilder(
             context,
             MemoryDb::class.java,
-            "cellclaw_memory"
+            "k1play_agent_memory"
         ).fallbackToDestructiveMigration().build()
     }
 
