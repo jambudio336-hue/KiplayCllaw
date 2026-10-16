@@ -41,6 +41,7 @@
 | Input dan output suara | Input suara serta text-to-speech jika diaktifkan dan tersedia pada perangkat | Membutuhkan izin mikrofon/pengaturan suara |
 | Skill | Coding full-stack, riset, review kode, respons insiden, pentest berizin, analisis pasar | Skill adalah panduan; bukan bukti tool/data real-time tersedia |
 | Kontrol Android | Sebagian aksi UI melalui Accessibility Service dan tool perangkat | Hanya setelah izin pengguna; tidak semua aplikasi mengizinkan otomasi |
+| Info perangkat | `device.info` membaca merek/model, versi Android, patch keamanan, ABI, RAM, baterai, dan status aksesibilitas; dapat menyertakan daftar aplikasi bila diminta | Tidak membaca IMEI/serial, kata sandi, atau OTP; daftar aplikasi dibatasi 250 entri |
 | Termux | Menjalankan perintah melalui integrasi Termux yang kompatibel | Periksa perintah sebelum menyetujui; jangan jalankan perintah asing |
 | Layanan latar belakang | Service dengan notifikasi persisten untuk tugas yang diaktifkan pengguna | Android/OEM dapat membatasi proses; pengguna tetap bisa menghentikannya |
 | Tema | Identitas gelap hitam-merah dan ikon robot bertopeng | Animasi video pertarungan anime belum termasuk dalam build ini |
@@ -90,6 +91,8 @@ Buat key hanya pada situs resmi provider. Pemakaian API dapat berbayar dan mengi
 ## Otomasi Android dan Termux
 
 ### Izin Android
+
+Agent dapat memakai `device.info` untuk menyesuaikan langkah dengan merek dan versi Android. Untuk inventaris aplikasi, agent harus meminta alat tersebut menyertakan daftar aplikasi; ini hanya memberi nama/package, bukan membuka sesi atau membobol login.
 Aktifkan hanya fitur yang benar-benar dibutuhkan:
 1. Buka **Pengaturan Android → Aksesibilitas → Aplikasi yang diunduh/layanan terpasang**.
 2. Pilih layanan K1pL4y_Agent.pro dan baca keterangannya sebelum mengaktifkan.
