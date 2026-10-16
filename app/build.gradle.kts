@@ -27,7 +27,7 @@ android {
         testInstrumentationRunner = "com.cellclaw.test.HiltTestRunner"
 
         buildConfigField("String", "GEMINI_API_KEY",
-            "\"\${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
+            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
     }
 
     buildTypes {
