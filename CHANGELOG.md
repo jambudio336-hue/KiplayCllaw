@@ -17,6 +17,8 @@ Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan 
 - Optionally enumerate installed app labels/package IDs for user-requested workflows.
 - Validate WhatsApp direct-chat phone numbers and normalize them to country-code digits.
 - Report UI submission separately from delivery confirmation.
+- Fix Always Allow decisions being treated as denials; persist explicit per-tool choices across app restarts.
+- Improve the agent's device-aware planning, screen re-checks, and truthful messaging status reporting.
 
 ## [Unreleased] — 2026-10-17
 
