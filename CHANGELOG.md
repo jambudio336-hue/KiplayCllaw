@@ -8,6 +8,16 @@ Semua perubahan penting dicatat di sini. Versi saat ini masih eksperimental dan 
 - Sync provider selection with the selected provider's default model.
 - Clarify the OpenRouter API key label and expected key prefix.
 
+## [0.1.3] — 2026-10-17
+- Improve accessibility UI matching using both visible text and content descriptions.
+- Check whether text insertion and send-button activation actually succeeded.
+- Fix messaging tool behavior that previously reported a message as sent without checking the send action.
+- Support common Indonesian and English message-input/send labels.
+- Add device inspection for handset brand/model, Android version, security patch, ABI, memory, battery, and accessibility status.
+- Optionally enumerate installed app labels/package IDs for user-requested workflows.
+- Validate WhatsApp direct-chat phone numbers and normalize them to country-code digits.
+- Report UI submission separately from delivery confirmation.
+
 ## [Unreleased] — 2026-10-17
 
 ### Keamanan
