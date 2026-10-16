@@ -13,13 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.k1play.agentpro.skills.Skill
-import com.k1play.agentpro.ui.viewmodel.KeahlianViewModel
+import com.k1play.agentpro.ui.viewmodel.SkillsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KeahlianScreen(
+fun SkillsScreen(
     onBack: () -> Unit,
-    viewModel: KeahlianViewModel = hiltViewModel()
+    viewModel: SkillsViewModel = hiltViewModel()
 ) {
     val skills by viewModel.skills.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
