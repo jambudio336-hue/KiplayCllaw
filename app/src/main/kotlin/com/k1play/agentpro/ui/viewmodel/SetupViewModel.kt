@@ -30,6 +30,10 @@ class SetupViewModel @Inject constructor(
     fun selectProvider(type: String) {
         _selectedProvider.value = type
         providerManager.switchProvider(type)
+        // Keep the shared model setting in sync with the selected provider.
+        // Otherwise a previous Claude model can be sent to OpenRouter and rejected.
+        val defaultModel = defaultModel(type)
+        if (defaultModel.isNotBlank()) appConfig.model = defaultModel
     }
 
     fun saveApiKey(provider: String, apiKey: String) {
