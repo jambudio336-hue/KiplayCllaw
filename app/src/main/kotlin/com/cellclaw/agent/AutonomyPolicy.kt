@@ -32,7 +32,7 @@ class AutonomyPolicy @Inject constructor() {
         "app.launch", "app.automate", "messaging.open",
         "sms.send", "phone.call", "contacts.add", "calendar.create",
         "camera.snap", "camera.record", "clipboard.write", "file.write",
-        "script.exec", "email.send", "messaging.reply", "schedule.manage",
+        "script.exec", "termux.exec", "email.send", "messaging.reply", "schedule.manage",
         "heartbeat.context"
     )
 
@@ -64,7 +64,7 @@ class AutonomyPolicy @Inject constructor() {
         when (profile) {
             PermissionProfile.FULL_AUTO -> {
                 for (tool in allTools) {
-                    policies[tool] = ToolApprovalPolicy.AUTO
+                    policies[tool] = if (tool == "termux.exec") ToolApprovalPolicy.ASK else ToolApprovalPolicy.AUTO
                 }
             }
             PermissionProfile.BALANCED -> {
