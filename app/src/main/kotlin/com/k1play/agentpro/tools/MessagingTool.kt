@@ -48,8 +48,13 @@ For other apps or to search by contact name: provide app and contact_name, then 
 
     private fun openWhatsApp(phoneNumber: String?, contactName: String?): ToolResult {
         if (phoneNumber != null) {
-            val cleanNumber = phoneNumber.replace(Regex("[^+\\d]"), "")
+            val cleanNumber = phoneNumber.filter { it.isDigit() }
+            if (cleanNumber.length !in 8..15) {
+                return ToolResult.error("Phone number must include the country code and contain 8–15 digits.")
+            }
             val intent = Intent(Intent.ACTION_VIEW).apply {
+                // WhatsApp's phone query expects digits with country code; omit '+' to avoid
+                // query-string '+' decoding as a space.
                 data = Uri.parse("https://api.whatsapp.com/send?phone=$cleanNumber")
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
@@ -230,7 +235,7 @@ Must have a chat open in the foreground with a visible input field."""
                 val tapIntent = Intent(K1pL4yAgentProAccessibility.ACTION_COMMAND).apply {
                     putExtra("result_receiver", tapReceiver)
                     putExtra("action", "tap")
-                    putExtra("text", "Type a message")
+                    putExtra("text", "Type a message|Ketik pesan|Message|Pesan")
                     setPackage(context.packageName)
                 }
                 context.sendBroadcast(tapIntent)
