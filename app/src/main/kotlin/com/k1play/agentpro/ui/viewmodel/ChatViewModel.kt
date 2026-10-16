@@ -97,6 +97,7 @@ class ChatViewModel @Inject constructor(
             runCatching { conversationStore.clearCurrentConversation() }
             _messages.value = emptyList()
             messageCounter = 0L
+            refreshConversationList()
         }
     }
 
@@ -196,9 +197,7 @@ class ChatViewModel @Inject constructor(
             content = content,
             toolName = toolName
         )
-        viewModelScope.launch {
-            runCatching { conversationStore.addMessage(role, content) }
-        }
+        // AgentLoop persists user and assistant messages once; this layer only renders events.
         // Auto-speak assistant responses if enabled
         if (role == "assistant" && appConfig.autoSpeakResponses) {
             voiceManager.speak(content)
