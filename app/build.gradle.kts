@@ -22,8 +22,8 @@ android {
         applicationId = "com.k1play.agentpro"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
         testInstrumentationRunner = "com.k1play.agentpro.test.HiltTestRunner"
 
         buildConfigField("String", "GEMINI_API_KEY",
